@@ -9,6 +9,8 @@
 /build/
 # node scripts/build-web.mjs：静态前端成品
 /dist/
+# 本地界面检查、截图和隔离测试数据
+/.taste-skill/
 # 导出 PDF 的结果（RESUME_EDITOR_HOME 指向项目内时）
 /output/
 # mygo 本地缓存

@@ -344,13 +344,351 @@ body.is-resizing #previewFrame {
   color: var(--ink-3);
 }
 
-/* ---------- 窄窗口降级：堆叠显示，停用拖拽 ---------- */
+/* File details share the editor's middle pane. */
+.file-manager {
+  flex: 1 1 0;
+  min-width: var(--editor-min-w);
+  min-height: 0;
+  overflow-y: auto;
+  padding: 26px 28px 40px;
+  background: var(--surface);
+}
+.files-heading {
+  position: relative;
+  padding-bottom: 23px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 23px;
+}
+.files-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 650;
+}
+.files-heading .group-desc {
+  max-width: 300px;
+  line-height: 1.7;
+}
+.file-create {
+  margin-top: 17px;
+  height: 32px;
+}
+.document-card {
+  padding: 20px 18px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+.document-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.document-format {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 37px;
+  height: 44px;
+  border: 1px solid #d6e1eb;
+  border-radius: 5px;
+  background: #f3f7fa;
+  color: var(--accent);
+  font:
+    600 11px/1 ui-monospace,
+    monospace;
+}
+.document-identity {
+  min-width: 0;
+  flex: 1;
+}
+.document-identity p {
+  margin: 0 0 2px;
+  font-size: 11px;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+.document-identity h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.current-file-badge {
+  align-self: flex-start;
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #edf4f0;
+  color: #337655;
+  font-size: 9px;
+}
+.document-filename {
+  margin: 18px 0 16px;
+  color: var(--ink-2);
+  font:
+    11px/1.7 ui-monospace,
+    'Microsoft YaHei',
+    monospace;
+  overflow-wrap: anywhere;
+}
+.document-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: 10px;
+}
+.document-card-foot .btn {
+  gap: 8px;
+}
+.jd-editor {
+  margin-top: 26px;
+}
+.jd-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.jd-heading label {
+  font-size: 12px;
+  font-weight: 650;
+}
+.jd-heading label span {
+  font-weight: 400;
+  font-size: 10px;
+  color: var(--ink-2);
+  margin-left: 5px;
+}
+.jd-heading > span {
+  font-size: 10px;
+  color: var(--ink-2);
+}
+.jd-editor textarea {
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  padding: 13px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  color: var(--ink);
+  background: var(--surface-alt);
+  font-size: 12px;
+  line-height: 1.85;
+  resize: vertical;
+}
+.jd-editor textarea::placeholder {
+  color: #7a8795;
+}
+.jd-note {
+  font-size: 10.5px;
+  color: var(--ink-2);
+  margin: 9px 0 0;
+}
+.document-dialog {
+  width: min(530px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  margin: auto;
+  padding: 25px 27px 23px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  box-shadow: 0 24px 90px rgba(23, 40, 58, 0.22);
+  color: var(--ink);
+  background: var(--surface);
+  overflow: auto;
+}
+.document-dialog::backdrop {
+  background: rgba(29, 43, 58, 0.26);
+}
+.dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+.dialog-heading h2 {
+  font-size: 21px;
+  line-height: 1.4;
+  margin: 0;
+  font-weight: 650;
+}
+.dialog-heading .eyebrow {
+  font-size: 9px;
+}
+.dialog-close {
+  flex: none;
+  align-self: flex-start;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 23px;
+  line-height: 1;
+  transition:
+    background 0.14s,
+    transform 0.14s;
+}
+.dialog-close:hover {
+  background: var(--accent-soft);
+}
+.dialog-close:active {
+  transform: translateY(1px);
+}
+.dialog-intro {
+  font-size: 12px;
+  color: var(--ink-2);
+  margin: 8px 0 24px;
+}
+.document-dialog fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.dialog-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.dialog-field {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-bottom: 17px;
+}
+.dialog-field > span {
+  color: var(--ink-2);
+  font-size: 10px;
+  font-weight: 400;
+  margin-left: 4px;
+}
+.dialog-field input,
+.dialog-field textarea {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 9px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--surface-alt);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.dialog-field textarea {
+  min-height: 115px;
+  resize: vertical;
+}
+.dialog-field input::placeholder,
+.dialog-field textarea::placeholder {
+  color: #7a8795;
+}
+.source-heading {
+  font-size: 11.5px;
+  font-weight: 600;
+  margin: 2px 0 8px;
+}
+.document-sources {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.document-sources label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    border-color 0.14s;
+}
+.document-sources label:has(:checked) {
+  background: var(--accent-soft);
+  border-color: #a6bbce;
+}
+.document-sources input {
+  margin: 3px 0 0;
+  accent-color: var(--accent);
+}
+.document-sources small {
+  display: block;
+  font-size: 10px;
+  color: var(--ink-2);
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+.filename-rule {
+  margin-top: 19px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 10.5px;
+  color: var(--ink-2);
+}
+.filename-rule > span {
+  margin-right: 11px;
+}
+.filename-rule code {
+  font-size: 10.5px;
+  color: var(--accent);
+}
+.filename-rule small {
+  display: block;
+  font-size: 10px;
+  margin-top: 5px;
+}
+.dialog-error {
+  font-size: 11px;
+  color: var(--danger);
+  margin: 0 0 10px;
+}
+.dialog-error:empty {
+  display: none;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+}
+.dialog-actions .btn {
+  min-height: 34px;
+  padding: 0 16px;
+}
+.dialog-actions button[type='submit'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.dialog-actions button[type='submit']:hover {
+  background: var(--accent-hover);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* Narrow windows place navigation above the editor. */
 @media (max-width: 920px) {
   .titlebar {
     position: sticky;
     top: 0;
   }
-  /* 侧栏在此断点变为横向条，状态面板横跨全宽会失衡，直接收起 */
   .side-foot {
     display: none;
   }
@@ -374,25 +712,156 @@ body.is-resizing #previewFrame {
     width: auto !important;
     transition: none;
   }
-  .sidebar {
+  .sidebar,
+  html.sidebar-collapsed .sidebar {
+    padding: 12px 16px 6px;
     border-bottom: 1px solid var(--line);
   }
-  .nav-list {
+  .side-head,
+  .side-document,
+  html.sidebar-collapsed .side-foot {
+    display: none;
+  }
+  .nav-list,
+  .file-list {
     display: flex;
     gap: 6px;
-    overflow-x: auto;
+    overflow: auto;
     padding-bottom: 6px;
   }
-  .nav-item {
-    white-space: nowrap;
-    margin: 0;
+  .nav-list > li,
+  .file-list > li {
+    flex: none;
   }
-  .editor {
+  .nav-item,
+  html.sidebar-collapsed .nav-item {
+    min-height: 44px;
+    margin: 0;
+    padding: 8px 11px;
+  }
+  .nav-num,
+  .nav-detail,
+  .nav-count,
+  html.sidebar-collapsed .nav-num {
+    display: none;
+  }
+  html.sidebar-collapsed .nav-copy,
+  html.sidebar-collapsed .file-item-copy {
+    display: flex;
+  }
+  .file-list-head {
+    margin: 0 0 7px;
+  }
+  .file-item,
+  html.sidebar-collapsed .file-item {
+    min-height: 55px;
+    padding: 8px 11px;
+    margin: 0;
+    max-width: 240px;
+  }
+  .new-file-button {
+    margin: 5px 0 8px;
+    min-height: 44px;
+  }
+  html.sidebar-collapsed .new-file-label {
+    display: inline;
+  }
+  html.sidebar-collapsed .new-file-button {
+    font-size: 11px;
+  }
+  .editor,
+  .file-manager {
     min-width: 0;
     overflow: visible;
   }
   .preview {
     height: 70vh;
     border-top: 1px solid var(--line);
+  }
+}
+@media (max-width: 600px) {
+  .editor,
+  .file-manager {
+    padding: 23px 19px 35px;
+  }
+  .titlebar {
+    min-height: 52px;
+  }
+  .workspace-segments button {
+    height: 38px;
+  }
+  .tb-icon {
+    height: 40px;
+    width: 32px;
+  }
+  .preview-head {
+    padding: 0 10px;
+    gap: 5px;
+  }
+  .preview-head h2 {
+    font-size: 11px;
+  }
+  .preview-title .eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.4px;
+  }
+  .zoom button {
+    height: 36px;
+  }
+  .preview-actions .btn {
+    min-height: 36px;
+    padding: 0 7px;
+  }
+  .document-card {
+    padding: 16px 13px 12px;
+  }
+  .document-card-foot .btn,
+  .file-create {
+    min-height: 44px;
+  }
+  .current-file-badge {
+    font-size: 8px;
+  }
+  .document-dialog {
+    padding: 20px;
+  }
+  .dialog-field-grid,
+  .document-sources {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .document-sources {
+    gap: 8px;
+  }
+  .dialog-close,
+  .dialog-actions .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 920px) {
+  .side-head,
+  html.sidebar-collapsed .side-head {
+    display: flex;
+    padding: 0 0 11px;
+    max-width: 300px;
+  }
+  .side-head .workspace-segments,
+  html.sidebar-collapsed .workspace-segments {
+    flex-direction: row;
+  }
+  .side-head .workspace-segments button {
+    min-height: 38px;
+    flex: 1;
+  }
+  html.sidebar-collapsed .segment-short {
+    display: none;
+  }
+  html.sidebar-collapsed .segment-label {
+    display: inline;
+  }
+  .side-status {
+    display: none;
   }
 }

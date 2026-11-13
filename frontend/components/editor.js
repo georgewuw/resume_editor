@@ -1,27 +1,46 @@
 import { element } from '../dom.js';
+import { copyContent } from '../content.js';
 
 /** Owns navigation, field controls, search and completion display. */
-export function createEditor({ schema, groups, initial, content, onChange, onSelect }) {
+export function createEditor({
+  schema,
+  groups,
+  content,
+  onChange,
+  onSelect,
+  getProgress,
+  onProgressError,
+}) {
   const state = { active: '', search: '' };
+  const navProgress = new Map();
+  let progressRequest = 0;
+
   function renderNav() {
     const ul = element('navList');
     ul.innerHTML = '';
+    navProgress.clear();
     groups.forEach((g, i) => {
       const li = document.createElement('li');
-      li.className = 'nav-item' + (g.id === state.active ? ' active' : '');
-      li.innerHTML =
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'nav-item' + (g.id === state.active ? ' active' : '');
+      if (g.id === state.active) button.setAttribute('aria-current', 'true');
+      button.innerHTML =
         '<span class="nav-num">' +
         String(i + 1).padStart(2, '0') +
         '</span>' +
-        '<span class="nav-name"></span><span class="nav-count">' +
-        g.items.length +
-        '</span>';
-      li.querySelector('.nav-name').textContent = g.title;
-      li.title = g.title + '（' + g.en + '）';
-      li.addEventListener('click', () => selectGroup(g.id));
+        '<span class="nav-copy"><span class="nav-name"></span><span class="nav-detail"></span></span>' +
+        '<span class="nav-count"></span>';
+      button.querySelector('.nav-name').textContent = g.title;
+      button.querySelector('.nav-detail').textContent = g.items.length + ' 个字段';
+      button.title = g.title;
+      button.addEventListener('click', () => selectGroup(g.id));
+      navProgress.set(g.id, button.querySelector('.nav-count'));
+      li.appendChild(button);
       ul.appendChild(li);
     });
     element('totalCount').textContent = String(schema.length);
+    updateProgress();
   }
 
   function selectGroup(id) {
@@ -117,13 +136,25 @@ export function createEditor({ schema, groups, initial, content, onChange, onSel
     updateProgress();
   }
 
-  function updateProgress() {
-    let n = 0;
-    for (const f of schema) {
-      const cur = (content.fields[f.key] || []).join('\n').trim();
-      const ini = (initial.fields[f.key] || []).join('\n').trim();
-      if (cur && cur !== ini) n++;
+  async function updateProgress() {
+    const request = ++progressRequest;
+    let progress;
+    try {
+      progress = await getProgress(copyContent(content));
+    } catch (cause) {
+      if (request === progressRequest) onProgressError(cause);
+      return;
     }
+    if (request !== progressRequest) return;
+    const n = progress.filled;
+    groups.forEach((group) => {
+      const count = progress.groups[group.id] || 0;
+      const node = navProgress.get(group.id);
+      if (!node) return;
+      node.textContent = count + '/' + group.items.length;
+      node.classList.toggle('complete', count === group.items.length);
+      node.setAttribute('aria-label', '已填写 ' + count + ' / ' + group.items.length + ' 项');
+    });
     element('filledCount').textContent = String(n);
     const ratio = schema.length ? n / schema.length : 0;
     element('progressBar').style.width = Math.round(ratio * 100) + '%';
@@ -141,5 +172,10 @@ export function createEditor({ schema, groups, initial, content, onChange, onSel
     renderForm();
   });
   updateProgress();
-  return { selectGroup };
+  function refresh() {
+    renderNav();
+    renderForm();
+  }
+
+  return { selectGroup, refresh };
 }

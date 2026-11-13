@@ -1,7 +1,4 @@
-/* titlebar.css — 自定义顶栏（替代被隐藏的原生标题栏）
-   单行系统层，左侧上下文切换 + 状态，右侧动作按钮组；
-   中间留白即窗口拖拽区（mygo 用 --app-region: drag 识别）。 */
-
+/* Native window drag region and compact workspace controls. */
 .titlebar {
   --app-region: drag;
   flex: none;
@@ -9,7 +6,6 @@
   min-height: var(--titlebar-h);
   display: flex;
   align-items: center;
-  gap: 10px;
   padding-left: calc(10px + var(--mygo-titlebar-inset-left, 0px));
   padding-right: calc(10px + var(--mygo-titlebar-inset-right, 0px));
   background: var(--chrome);
@@ -18,25 +14,20 @@
   position: relative;
   z-index: 20;
 }
-
 .tb-left {
   flex: 1;
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-
-/* 交互元素显式取消拖拽，避免被桥接层判定为窗口拖动 */
 .tb-icon,
-.tb-switch,
-.tb-menu {
+.workspace-segments {
   --app-region: no-drag;
 }
-
 .tb-icon {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   flex: none;
   display: grid;
   place-items: center;
@@ -46,11 +37,15 @@
   color: var(--ink-2);
   transition:
     background 0.14s,
-    color 0.14s;
+    color 0.14s,
+    transform 0.14s;
 }
 .tb-icon:hover {
   background: var(--chrome-hover);
   color: var(--accent);
+}
+.tb-icon:active {
+  transform: translateY(1px);
 }
 .tb-icon svg {
   width: 16px;
@@ -60,83 +55,43 @@ html.sidebar-collapsed .tb-icon {
   background: var(--accent-soft);
   color: var(--accent);
 }
-
-/* 模块切换器：顶栏的真实交互入口，与左侧导航共用同一份 groups 数据 */
-.tb-switcher {
-  position: relative;
+.workspace-segments {
+  display: inline-flex;
   flex: none;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 7px;
+  background: #e5eaf0;
 }
-.tb-switch {
+.workspace-segments button {
   height: 26px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 8px;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  background: transparent;
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  transition:
-    background 0.14s,
-    border-color 0.14s;
-}
-.tb-switch:hover,
-.tb-switch[aria-expanded='true'] {
-  background: var(--chrome-hover);
-  border-color: var(--line-strong);
-}
-.tb-switch .caret {
-  width: 10px;
-  height: 10px;
-  color: var(--ink-3);
-}
-.tb-menu {
-  position: absolute;
-  top: calc(100% + 7px);
-  left: 0;
-  min-width: 200px;
-  padding: 5px;
-  background: var(--surface);
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.14);
-  z-index: 50;
-}
-.tb-menu[hidden] {
-  display: none;
-}
-.tb-menu button {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  width: 100%;
-  padding: 7px 9px;
+  padding: 0 13px;
   border: 0;
   border-radius: 5px;
   background: transparent;
   color: var(--ink-2);
-  font-size: 12px;
-  text-align: left;
+  font-size: 11.5px;
+  font-weight: 550;
+  white-space: nowrap;
+  transition:
+    background 0.14s,
+    color 0.14s,
+    box-shadow 0.14s,
+    transform 0.14s;
 }
-.tb-menu button:hover {
-  background: var(--accent-soft);
+.workspace-segments button:hover {
+  color: var(--ink);
+  background: #edf1f5;
+}
+.workspace-segments button[aria-pressed='true'] {
+  background: var(--surface);
   color: var(--accent);
+  font-weight: 650;
+  box-shadow: 0 1px 3px rgba(26, 44, 62, 0.1);
 }
-.tb-menu button.active {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 600;
+.workspace-segments button:active {
+  transform: translateY(1px);
 }
-.tb-menu .menu-num {
-  font-size: 10px;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-  min-width: 18px;
-}
-
 .tb-sep {
   width: 1px;
   height: 16px;
@@ -145,23 +100,26 @@ html.sidebar-collapsed .tb-icon {
 }
 .tb-context {
   font-size: 11px;
-  color: var(--ink-3);
+  color: var(--ink-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.tb-context-dot {
-  padding: 0 4px;
-}
-
-/* 窗口失活时压低系统层对比度，贴近原生窗口观感 */
-html[data-mygo-window-inactive] .tb-context,
-html[data-mygo-window-inactive] .tb-switch {
+html[data-mygo-window-inactive] .tb-context {
   opacity: 0.62;
 }
-
-@media (max-width: 1000px) {
-  .tb-context {
+@media (max-width: 620px) {
+  .tb-context,
+  .tb-sep {
     display: none;
   }
+}
+
+.tb-title {
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

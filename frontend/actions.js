@@ -1,42 +1,86 @@
 import { element } from './dom.js';
 import { copyContent } from './content.js';
 
-// Save scheduling and export orchestration are independent of form rendering.
-export function createDocumentActions({ backend, content, notices, logger, errors, platform }) {
+// Queued saves capture content and file identity before touching the bridge.
+export function createDocumentActions({
+  backend,
+  content,
+  getDocument,
+  onSaved,
+  notices,
+  logger,
+  errors,
+  platform,
+}) {
   let saveTimer = 0;
+  let pending = null;
+  let queue = Promise.resolve();
+  let revision = 0;
 
-  async function save(quiet = true) {
+  function snapshot() {
+    const document = getDocument();
+    return {
+      filename: document.filename,
+      jd: document.jd,
+      content: copyContent(content),
+      revision,
+    };
+  }
+
+  function failure(cause) {
+    notices.status('保存失败', 'error');
+    notices.failure(logger.error('save_failed', cause, errors.codes.CONTENT_SAVE_FAILED));
+  }
+
+  async function flush() {
     clearTimeout(saveTimer);
-    try {
-      await backend.save(copyContent(content));
-      notices.status('已保存');
-      if (!quiet) notices.toast('内容已保存');
-      logger.info('save_completed');
-    } catch (cause) {
-      notices.status('保存失败', 'error');
-      notices.failure(logger.error('save_failed', cause, errors.codes.CONTENT_SAVE_FAILED));
-    }
+    const next = pending;
+    pending = null;
+    if (!next) return queue;
+    queue = queue
+      .catch(() => {})
+      .then(async () => {
+        try {
+          const info = await backend.saveDocument(next.filename, next.content, next.jd);
+          await onSaved(info, next.revision === revision);
+          if (next.revision === revision) notices.status('已保存');
+          logger.info('save_completed');
+        } catch (cause) {
+          if (!pending && next.revision === revision) pending = next;
+          throw cause;
+        }
+      });
+    return queue;
   }
 
   function scheduleSave() {
+    revision++;
+    pending = snapshot();
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => save(), 900);
+    saveTimer = setTimeout(() => flush().catch(failure), 900);
+  }
+
+  async function save(quiet = true) {
+    pending = snapshot();
+    await flush();
+    if (!quiet) notices.toast('当前简历已保存');
   }
 
   async function exportPDF() {
-    clearTimeout(saveTimer);
-    notices.status('正在导出 PDF…', 'busy');
-    logger.info('export_started');
+    const button = element('btnPdf');
+    button.disabled = true;
     try {
-      const snapshot = copyContent(content);
-      await backend.save(snapshot);
-      const result = await backend.export(snapshot);
+      await save();
+      notices.status('正在导出 PDF…', 'busy');
+      const result = await backend.export(copyContent(content));
       notices.status('已保存');
       notices.toast('PDF 已导出：' + result);
       logger.info('export_completed');
     } catch (cause) {
       notices.status('导出失败', 'error');
       notices.failure(logger.error('export_failed', cause, errors.codes.EXPORT_FAILED));
+    } finally {
+      button.disabled = false;
     }
   }
 
@@ -44,9 +88,9 @@ export function createDocumentActions({ backend, content, notices, logger, error
   document.addEventListener('keydown', (event) => {
     if (platform.matchesShortcut(event, 's')) {
       event.preventDefault();
-      save(false);
+      save(false).catch(failure);
     }
   });
 
-  return { scheduleSave };
+  return { scheduleSave, flush, save };
 }

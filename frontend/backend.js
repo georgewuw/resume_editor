@@ -12,6 +12,12 @@ export function createBackend(errors) {
     save: 'Resume.Save',
     export: 'Resume.Export',
     log: 'Resume.Log',
+    listDocuments: 'Resume.ListDocuments',
+    workspace: 'Resume.Workspace',
+    progress: 'Resume.Progress',
+    openDocument: 'Resume.OpenDocument',
+    createDocument: 'Resume.CreateDocument',
+    saveDocument: 'Resume.SaveDocument',
   };
 
   async function invoke(method, code, ...args) {
@@ -29,5 +35,12 @@ export function createBackend(errors) {
     save: (content) => invoke('save', errors.codes.CONTENT_SAVE_FAILED, content),
     export: (content) => invoke('export', errors.codes.EXPORT_FAILED, content),
     log: (entry) => bridge.call(methods.log, entry),
+    listDocuments: () => invoke('listDocuments', errors.codes.CONTENT_LOAD_FAILED),
+    workspace: () => invoke('workspace', errors.codes.CONTENT_LOAD_FAILED),
+    progress: (content) => invoke('progress', errors.codes.DOCUMENT_INVALID, content),
+    openDocument: (filename) => invoke('openDocument', errors.codes.CONTENT_LOAD_FAILED, filename),
+    createDocument: (input) => invoke('createDocument', errors.codes.CONTENT_SAVE_FAILED, input),
+    saveDocument: (filename, content, jd) =>
+      invoke('saveDocument', errors.codes.CONTENT_SAVE_FAILED, filename, content, jd),
   };
 }

@@ -208,9 +208,6 @@ export function createPanes({ onResize, logger, errors, storageKey, platform }) 
   element('btnSidebar').addEventListener('click', () => {
     toggleSidebar();
   });
-  element('btnCollapse').addEventListener('click', () => {
-    toggleSidebar();
-  });
   document.addEventListener('keydown', (e) => {
     if (platform.matchesShortcut(e, 'b')) {
       e.preventDefault();
