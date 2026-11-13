@@ -1,0 +1,119 @@
+/* workspace.css — 三栏工作区、可拖拽中线分隔条、编辑区与预览区
+   （对应 MyGit 的 view.go：面板各自带细线表头，面板之间由分隔线划开） */
+
+.workspace{flex:1;min-height:0;display:flex;align-items:stretch;overflow:hidden;}
+
+/* ---------- 中线分隔条 ---------- */
+.splitter{
+  flex:none;width:var(--splitter-w);position:relative;cursor:col-resize;
+  background:var(--bg);touch-action:none;z-index:4;outline-offset:-2px;
+}
+.splitter::before{
+  content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;
+  background:var(--line-strong);transform:translateX(-50%);
+  transition:background .14s,width .14s;
+}
+.splitter:hover::before,
+.splitter.dragging::before,
+.splitter:focus-visible::before{background:var(--accent);width:2px;}
+.splitter-grip{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:3px;height:26px;border-radius:2px;background:var(--accent);
+  opacity:.28;transition:opacity .14s;pointer-events:none;
+}
+.splitter:hover .splitter-grip,
+.splitter.dragging .splitter-grip,
+.splitter:focus-visible .splitter-grip{opacity:.85;}
+.splitter.disabled{pointer-events:none;opacity:.4;}
+
+/* 拖动期间：屏蔽 iframe 抢事件、禁用宽度过渡，保证实时且不抖动 */
+body.is-resizing{cursor:col-resize !important;user-select:none;}
+body.is-resizing *{cursor:col-resize !important;}
+body.is-resizing #previewFrame{pointer-events:none;}
+
+/* ---------- 编辑区 ---------- */
+.editor{
+  flex:1 1 0;min-width:320px;min-height:0;overflow-y:auto;
+  padding:24px 30px 60px;background:var(--surface);
+}
+.editor-head{margin-bottom:18px;}
+.eyebrow{margin:0 0 4px;font-size:10px;font-weight:700;letter-spacing:1.3px;color:var(--ink-3);text-transform:uppercase;}
+.editor-head h2{margin:0;font-size:18px;font-weight:650;letter-spacing:-.2px;line-height:1.3;}
+.group-desc{margin:6px 0 0;font-size:12px;color:var(--ink-2);}
+.search{
+  margin-top:16px;display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;
+  background:var(--surface-alt);border:1px solid var(--line);border-radius:var(--radius-sm);
+  color:var(--ink-3);transition:border-color .14s;
+}
+.search:focus-within{border-color:var(--accent);color:var(--accent);}
+.search svg{width:15px;height:15px;flex:none;}
+.search input{flex:1;border:0;outline:0;background:transparent;font-size:12.5px;color:var(--ink);min-width:0;}
+.search input::placeholder{color:var(--ink-3);}
+
+.form{max-width:620px;}
+.group-divider{
+  display:flex;align-items:center;gap:10px;margin:24px 0 13px;
+  font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--ink-3);
+}
+.group-divider::after{content:"";flex:1;height:1px;background:var(--line);}
+.field{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;margin-bottom:9px;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+.field:hover{border-color:var(--line-strong);}
+.field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,70,100,.07);}
+.field-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:7px;}
+.field-head label{font-size:12px;font-weight:650;color:var(--ink-2);}
+.field-hint{font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.field input,.field textarea{
+  display:block;width:100%;border:0;outline:0;background:transparent;
+  font-size:13.5px;line-height:1.65;color:var(--ink);padding:0;resize:vertical;
+}
+.field input::placeholder,.field textarea::placeholder{color:#B9C0C8;}
+.field textarea{min-height:64px;}
+.field.lines textarea{min-height:92px;}
+.field-key{
+  display:inline-block;margin-top:7px;font-size:10px;color:var(--ink-3);
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.2px;
+}
+.empty{padding:40px 0;text-align:center;color:var(--ink-3);font-size:13px;}
+
+/* ---------- 预览区 ---------- */
+.preview{
+  flex:none;width:var(--preview-w);min-width:0;display:flex;flex-direction:column;
+  background:#EDF0F3;
+}
+.preview-head{
+  flex:none;height:var(--pane-head-h);display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--line);
+}
+.preview-title .eyebrow{margin:0;font-size:9px;letter-spacing:1px;}
+.preview-head h2{margin:0;font-size:13px;font-weight:650;letter-spacing:-.1px;line-height:1.3;}
+.zoom{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;}
+.zoom button{width:28px;height:28px;border:0;background:var(--surface);color:var(--ink-2);font-size:15px;line-height:1;}
+.zoom button:hover{background:var(--accent-soft);color:var(--accent);}
+.zoom .zoom-label{width:46px;font-size:11px;font-variant-numeric:tabular-nums;}
+.preview-scroll{flex:1;overflow:auto;padding:20px 12px 36px;}
+.paper-holder{position:relative;margin:0 auto;}
+.paper-stage{position:absolute;top:0;left:0;width:var(--paper-w);height:var(--paper-h);transform-origin:top left;}
+.paper-stage iframe{width:var(--paper-w);height:var(--paper-h);border:0;display:block;background:#fff;}
+.preview-foot{
+  flex:none;height:32px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;background:var(--surface);border-top:1px solid var(--line);
+  font-size:10.5px;color:var(--ink-3);
+}
+
+/* ---------- 窄窗口降级：堆叠显示，停用拖拽 ---------- */
+@media (max-width:920px){
+  body{overflow:auto;}
+  .app{height:auto;min-height:100vh;overflow:visible;}
+  .workspace{display:block;overflow:visible;}
+  .splitter{display:none;}
+  .sidebar,.preview{width:auto !important;transition:none;}
+  .sidebar{border-bottom:1px solid var(--line);}
+  .nav-list{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
+  .nav-item{white-space:nowrap;margin:0;}
+  .editor{min-width:0;overflow:visible;}
+  .preview{height:70vh;border-top:1px solid var(--line);}
+}

@@ -1,0 +1,45 @@
+# =============================================================
+# 简历编辑器 · Git 忽略规则
+# 原则：仓库只放源码、原稿、配置与文档。
+#       构建产物、中间输出、本地数据一律不入库，均由 README 的命令重建。
+# =============================================================
+
+# --- 构建输出 ---
+# go tool mygo build：exe、图标副本、.mygo-files
+/build/
+# node scripts/build-web.mjs：静态前端成品
+/dist/
+# 导出 PDF 的结果（RESUME_EDITOR_HOME 指向项目内时）
+/output/
+# mygo 本地缓存
+/.mygo/
+# Windows 版本资源，编译时生成（原 mygo_windows_*.syso）
+*.syso
+
+# --- 由工具生成、非构建必需的契约文件 ---
+# mygo generate 生成的前端 TS 绑定，前端并不 import 它
+/mygo.ts
+
+# --- 本地运行数据：含用户填写内容，绝不入库 ---
+# WorkBuddy 项目数据与工作记录；保留在磁盘，勿删
+/.workbuddy/
+.env
+.env.*
+!.env.example
+
+# --- 通用杂项 ---
+node_modules/
+__pycache__/
+*.py[cod]
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+*~
+Thumbs.db
+desktop.ini
+.DS_Store
+/*.exe
+/*.pdf

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>简历模板 · A4 双页版式</title>
+<style>
+/* ============================================================
+   设计规格（依据样式参考图逐像素测量换算，固定双页 A4）
+   参考图 A4 页面 = 372 x 527 px；1px = 0.5645mm = 1.6pt
+   主色 #244664 / 分隔线 #C8D1D8 / 画布 #E6E6E6
+   顶栏：距顶 6.2mm、高 6.8mm、左短块 11.3mm + 缝 2.3mm + 长条
+   底栏：高 3.4mm、左右内缩 12.4mm
+   内容区：左右各 12.4mm、宽 185.2mm
+   页眉：姓名与三行信息按整页水平中心居中；信息为楷体小四 12pt / 行距 15.7pt
+         证件照 29 x 37.2mm（原稿外框 245 x 316px），绝对定位于内容区右上角
+   行距与对齐：在参考图基础上做专业化优化（网格列对齐 + 两端对齐）
+   间距经满负荷排版压测校准：按参考图量级文案填充时两页均不溢出
+   ============================================================ */
+:root{
+  --navy:#244664;
+  --navy-mid:#5A748A;
+  --rule:#C8D1D8;
+  --ink:#333333;
+  --ink-strong:#1B1B1B;
+  --ink-soft:#5A5A5A;
+  --paper:#FFFFFF;
+  --canvas:#E6E6E6;
+
+  --pad-x:12.4mm;
+  --topbar-top:6.2mm;
+  --topbar-h:6.8mm;
+  --topbar-short:11.3mm;
+  --topbar-gap:2.3mm;
+  --bottombar-h:3.4mm;
+  --content-top:18mm;
+  --content-bottom:9mm;
+
+  --fs-body:10pt;
+  --lh-body:1.64;
+  --fs-title:12.5pt;
+  --fs-name:18pt;
+  --fs-info:12pt;        /* 小四 */
+  --lh-info:15.7pt;      /* 原稿三行信息行距 47px ≈ 5.54mm */
+  --fs-meta:9.5pt;
+  --fs-small:9pt;
+  --icon:7.6mm;
+
+  --hdr-h:37.2mm;        /* 由证件照高度决定 */
+  --hdr-gap:2mm;         /* 页眉与首个栏目标题的间距 */
+  --photo-w:29mm;        /* 原稿外框 245px ≈ 28.9mm */
+  --photo-h:37.2mm;      /* 原稿外框 316px ≈ 37.2mm */
+  --gap-sec:3.4mm;
+  --gap-item:1.3mm;
+  --sec-pb:1.0mm;
+  --sec-mb:1.8mm;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--canvas);
+  font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",Arial,sans-serif;
+  color:var(--ink);
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
+
+/* ---------- 屏幕工具条（打印时隐藏） ---------- */
+.toolbar{
+  position:sticky;top:0;z-index:99;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:10px 18px;background:#1E3850;color:#EAF1F7;
+  font-size:13px;line-height:1.4;
+  box-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+.toolbar .tb-title{font-weight:700;letter-spacing:.5px;margin-right:6px;}
+.toolbar .tb-note{color:#AFC3D4;font-size:12px;}
+.toolbar .spacer{flex:1;}
+.toolbar button{
+  border:1px solid rgba(255,255,255,.35);background:transparent;color:#EAF1F7;
+  padding:6px 13px;border-radius:4px;cursor:pointer;font-size:12.5px;
+  font-family:inherit;transition:background .15s,border-color .15s;
+}
+.toolbar button:hover{background:rgba(255,255,255,.14);}
+.toolbar button.primary{background:#3E7CB1;border-color:#3E7CB1;font-weight:700;}
+.toolbar button.primary:hover{background:#5591C4;}
+
+/* ---------- A4 页面（固定两页） ---------- */
+.page{
+  position:relative;
+  width:210mm;height:297mm;
+  margin:8mm auto;
+  background:var(--paper);
+  overflow:hidden;
+  box-shadow:0 3px 18px rgba(0,0,0,.16);
+  page-break-after:always;
+  break-after:page;
+}
+.page:last-of-type{page-break-after:auto;break-after:auto;}
+
+.topbar{position:absolute;top:var(--topbar-top);left:0;right:0;height:var(--topbar-h);display:flex;}
+.topbar .seg-short{width:var(--topbar-short);background:var(--navy);flex:none;}
+.topbar .seg-gap{width:var(--topbar-gap);flex:none;}
+.topbar .seg-long{flex:1;background:var(--navy);}
+.bottombar{position:absolute;bottom:0.5mm;left:var(--pad-x);right:var(--pad-x);height:var(--bottombar-h);background:var(--navy);}
+
+.page-inner{
+  position:absolute;
+  top:var(--content-top);left:var(--pad-x);right:var(--pad-x);bottom:var(--content-bottom);
+  font-size:var(--fs-body);line-height:var(--lh-body);
+  overflow:hidden;
+}
+
+/* ---------- 可替换字段高亮（仅模板态，成品取消） ---------- */
+.f{
+  background:rgba(62,124,177,.10);
+  border-bottom:1px dashed rgba(62,124,177,.55);
+  border-radius:2px;
+  padding:0 1px;
+}
+body.filled .f{background:none;border-bottom:none;padding:0;color:inherit;font:inherit;}
+
+/* ---------- 个人信息 ---------- */
+/* 姓名与三行信息按「整页水平中心」居中，证件照绝对定位在右侧，
+   不再参与文字块宽度计算，避免把文字挤向左侧。 */
+.hdr{display:block;height:var(--hdr-h);margin-bottom:var(--hdr-gap);position:relative;}
+.hdr-text{width:100%;text-align:center;padding-top:8mm;}
+.hdr-name{
+  margin:0 0 3mm;   /* 姓名与「求职意向」之间的呼吸间距 */
+  font-size:var(--fs-name);font-weight:700;letter-spacing:3px;
+  color:var(--ink-strong);line-height:1.25;
+}
+/* 原稿：楷体 / 小四（12pt）/ 三行居中 / 等行距 / 无加粗与颜色区分 */
+.hdr-info{
+  font-family:"KaiTi","楷体","STKaiti","华文楷体","Kaiti SC",serif;
+  font-size:var(--fs-info);line-height:var(--lh-info);
+  color:#1A1A1A;font-weight:400;
+}
+.hdr-line{margin:0;text-align:center;white-space:nowrap;}
+.hdr-line .k,.hdr-line .v{font:inherit;color:inherit;}
+.hdr-line .kv{display:inline-block;}
+/* 原稿中的「· ·」是 Word 显示空格的格式标记，不是可见字符；这里只保留空白间距 */
+.hdr-line .sep{display:inline-block;width:2.6mm;}
+.hdr-photo{
+  position:absolute;top:0;right:0;
+  width:var(--photo-w);height:var(--photo-h);
+  padding:1.2mm;border:1px solid #DCE7F2;background:#FFFFFF;
+  overflow:hidden;
+}
+.hdr-photo > .f{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  text-align:center;background:linear-gradient(160deg,#F4F7FA 0%,#E8EEF3 100%);
+  color:#8A9AA8;font-size:var(--fs-small);line-height:1.6;
+}
+.hdr-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.hdr-photo .photo-tip{padding:1mm;}
+body.filled .hdr-photo > .f{background:linear-gradient(160deg,#F4F7FA 0%,#E8EEF3 100%);}
+
+/* ---------- 栏目标题 ---------- */
+.sec{margin-bottom:var(--gap-sec);break-inside:avoid;}
+.sec:last-child{margin-bottom:0;}
+.sec-head{
+  display:flex;align-items:center;gap:2.4mm;
+  border-bottom:1px solid var(--rule);
+  padding-bottom:var(--sec-pb);margin-bottom:var(--sec-mb);
+}
+.sec-icon{width:var(--icon);height:var(--icon);flex:none;display:block;}
+.sec-title{
+  font-size:var(--fs-title);font-weight:700;color:var(--navy);
+  letter-spacing:.8px;line-height:1.25;
+}
+.sec-en{font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:.2px;}
+
+/* ---------- 正文通用（对齐优化） ---------- */
+p{margin:0;}
+.para{
+  text-align:justify;text-justify:inter-ideograph;
+  line-height:var(--lh-body);
+  color:var(--ink);
+  overflow-wrap:anywhere;
+}
+.para + .para{margin-top:.6mm;}
+strong,.bold{font-weight:700;color:var(--ink-strong);}
+
+/* 个人优势：首行为不加粗的简述（brief），下方为「加粗要点 + 描述」条目 */
+.adv-brief{font-weight:400;color:var(--ink);margin-bottom:.8mm;}
+.adv-item{margin-bottom:.6mm;}
+.adv-item:last-child{margin-bottom:0;}
+.adv-item .lead{margin-right:1.2mm;}
+
+/* 条目通用：网格列对齐，替代参考图中的空格挤压 */
+.entry{margin-bottom:var(--gap-item);break-inside:avoid;}
+.entry:last-child{margin-bottom:0;}
+.entry-head{
+  display:grid;align-items:baseline;column-gap:2mm;
+  grid-template-columns:31mm 1fr 30mm 38mm;
+  font-size:var(--fs-body);line-height:1.5;
+}
+.entry-head .when{font-weight:700;color:var(--ink-strong);white-space:nowrap;}
+.entry-head .org{font-weight:600;color:var(--ink-strong);}
+.entry-head .dept{color:var(--ink);}
+.entry-head .role{text-align:right;font-weight:600;color:var(--ink-strong);}
+.entry .desc{margin-top:.8mm;}
+
+/* 项目经验 */
+.proj-title{font-weight:700;color:var(--ink-strong);line-height:1.5;margin-bottom:.6mm;}
+.proj-lines{margin-top:.6mm;}
+.proj-lines .ln{display:block;text-align:justify;text-justify:inter-ideograph;}
+
+/* 教育背景 */
+.edu-head{
+  display:grid;align-items:baseline;column-gap:2mm;
+  grid-template-columns:31mm 1fr 1fr;
+  font-size:var(--fs-body);line-height:1.5;
+}
+.edu-head .when{font-weight:700;color:var(--ink-strong);white-space:nowrap;}
+.edu-head .school{font-weight:600;color:var(--ink-strong);}
+.edu-head .major{text-align:right;font-weight:600;color:var(--ink-strong);}
+.edu-note{margin-top:.6mm;}
+.edu-note .k{font-weight:700;color:var(--ink-strong);margin-right:1.2mm;}
+
+/* 资格证书 */
+.cert .ln{display:block;}
+.cert .ln + .ln{margin-top:.6mm;}
+
+/* ---------- 打印 ---------- */
+@page{size:A4;margin:0;}
+@media print{
+  html,body{background:#FFFFFF !important;}
+  .toolbar{display:none !important;}
+  .page{margin:0 !important;box-shadow:none !important;}
+  .page-inner{overflow:hidden;}
+}
+@media screen and (max-width:820px){
+  .page{transform-origin:top center;}
+  .toolbar{position:static;}
+}
+</style>
+</head>
+<body data-layout="double">
+
+<div class="toolbar" id="toolbar">
+  <span class="tb-title">简历模板 · A4 双页</span>
+  <span class="tb-note">固定双页版式 · 页内 12.4mm 安全边距</span>
+  <span class="spacer"></span>
+  <button type="button" id="btn-print" class="primary">导出 PDF</button>
+</div>
+
+<!-- ======================= 第 1 页 ======================= -->
+<div class="page" id="page-1">
+  <div class="topbar"><span class="seg-short"></span><span class="seg-gap"></span><span class="seg-long"></span></div>
+  <div class="bottombar"></div>
+  <div class="page-inner" id="page-inner-1">
+
+    <!-- 模块：个人信息 -->
+    <header class="hdr" data-page="1">
+      <div class="hdr-text">
+        <h1 class="hdr-name"><span class="f" data-f="name">【姓名】</span></h1>
+        <div class="hdr-info">
+          <p class="hdr-line">求职意向：<span class="f" data-f="jobTarget">【求职意向】</span></p>
+          <p class="hdr-line"><span class="kv"><span class="k">出生年月：</span><span class="v"><span class="f" data-f="birth">【出生年月】</span></span></span><span class="sep"></span><span class="kv"><span class="k">性别：</span><span class="v"><span class="f" data-f="gender">【性别】</span></span></span><span class="sep"></span><span class="kv"><span class="k">籍贯：</span><span class="v"><span class="f" data-f="nativePlace">【籍贯】</span></span></span></p>
+          <p class="hdr-line"><span class="kv"><span class="k">微信/电话：</span><span class="v"><span class="f" data-f="phone">【联系电话】</span></span></span><span class="sep"></span><span class="kv"><span class="k">邮箱：</span><span class="v"><span class="f" data-f="email">【电子邮箱】</span></span></span></p>
+        </div>
+      </div>
+      <div class="hdr-photo"><div class="f" data-f="photo"><span class="photo-tip">【证件照】</span></div></div>
+    </header>
+
+    <!-- 模块：个人优势（Self-Assessment） -->
+    <section class="sec" data-page="1">
+      <div class="sec-head">
+        <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
+          <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
+          <rect x="11.5" y="13.5" width="17" height="11.5" rx="1" stroke="#244664" stroke-width="1.6"/>
+          <path d="M16 29h8M20 25v4" stroke="#244664" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M14.5 18h6M14.5 21h4" stroke="#244664" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <span class="sec-title">个人优势<span class="sec-en">（Self-Assessment）</span></span>
+      </div>
+      <div class="sec-body">
+        <p class="para adv-brief"><span class="f" data-f="brief">【简述】</span></p>
+        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv1Lead">【优势要点】</span></strong><span class="f" data-f="adv1Text">【描述】</span></p>
+        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv2Lead">【优势要点】</span></strong><span class="f" data-f="adv2Text">【描述】</span></p>
+        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv3Lead">【优势要点】</span></strong><span class="f" data-f="adv3Text">【描述】</span></p>
+        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv4Lead">【优势要点】</span></strong><span class="f" data-f="adv4Text">【描述】</span></p>
+        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv5Lead">【优势要点】</span></strong><span class="f" data-f="adv5Text">【描述】</span></p>
+        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv6Lead">【优势要点】</span></strong><span class="f" data-f="adv6Text">【描述】</span></p>
+      </div>
+    </section>
+
+    <!-- 模块：工作经历（Work Experience） -->
+    <section class="sec" data-page="1">
+      <div class="sec-head">
+        <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
+          <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
+          <rect x="11" y="14" width="18" height="13" rx="1.2" stroke="#244664" stroke-width="1.5"/>
+          <path d="M15 14v-2h7v2" stroke="#244664" stroke-width="1.5"/>
+          <path d="M14 20h12M14 23h8" stroke="#244664" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <span class="sec-title">工作经历<span class="sec-en">（Work Experience）</span></span>
+      </div>
+      <div class="sec-body">
+        <div class="entry">
+          <div class="entry-head">
+            <span class="when"><span class="f" data-f="work1Period">【起止时间】</span></span>
+            <span class="org"><span class="f" data-f="work1Company">【学校/公司名称】</span></span>
+            <span class="dept"><span class="f" data-f="work1Dept">【部门】</span></span>
+            <span class="role"><span class="f" data-f="work1Role">【职位名称】</span></span>
+          </div>
+          <p class="para desc"><span class="f" data-f="work1Desc">【描述】</span></p>
+        </div>
+        <div class="entry">
+          <div class="entry-head">
+            <span class="when"><span class="f" data-f="work2Period">【起止时间】</span></span>
+            <span class="org"><span class="f" data-f="work2Company">【学校/公司名称】</span></span>
+            <span class="dept"><span class="f" data-f="work2Dept">【部门】</span></span>
+            <span class="role"><span class="f" data-f="work2Role">【职位名称】</span></span>
+          </div>
+          <p class="para desc"><span class="f" data-f="work2Desc">【描述】</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 模块：项目经验（Project Experience）—— 第 1 页部分 -->
+    <section class="sec" data-page="1" id="sec-project-1">
+      <div class="sec-head">
+        <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
+          <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
+          <path d="M12.5 27.5l2.2-5.2 10.6-10.6a2 2 0 0 1 2.8 0l1 1a2 2 0 0 1 0 2.8L18.5 26.1l-5.2 2.2z" stroke="#244664" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M23.5 13.5l3 3" stroke="#244664" stroke-width="1.3"/>
+        </svg>
+        <span class="sec-title">项目经验<span class="sec-en">（Project Experience）</span></span>
+      </div>
+      <div class="sec-body">
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj1Name">【项目名称】</span></p>
+          <p class="para desc"><span class="f" data-f="proj1Desc">【描述】</span></p>
+        </div>
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj2Name">【项目名称】</span></p>
+          <p class="para desc"><span class="f" data-f="proj2Desc">【描述】</span></p>
+        </div>
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj3Name">【项目名称】</span></p>
+          <p class="para desc"><span class="f" data-f="proj3Desc">【描述】</span></p>
+        </div>
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj4Name">【项目名称】</span></p>
+          <p class="para desc"><span class="f" data-f="proj4Desc">【描述】</span></p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ======================= 第 2 页 ======================= -->
+<div class="page" id="page-2">
+  <div class="topbar"><span class="seg-short"></span><span class="seg-gap"></span><span class="seg-long"></span></div>
+  <div class="bottombar"></div>
+  <div class="page-inner" id="page-inner-2" style="top:34mm">
+
+    <!-- 模块：项目经验（Project Experience）—— 续（不重复栏目标题） -->
+    <section class="sec" data-page="2" id="sec-project-2">
+      <div class="sec-body">
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj5Name">【项目名称】</span></p>
+          <p class="para desc"><span class="f" data-f="proj5Desc">【描述】</span></p>
+        </div>
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj6Name">【项目名称】</span></p>
+          <div class="proj-lines para"><div class="f" data-f="proj6Desc" data-multiline="1"><span class="ln">【描述】</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 模块：教育背景（Education） -->
+    <section class="sec" data-page="2">
+      <div class="sec-head">
+        <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
+          <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
+          <path d="M10.5 17.5L20 13l9.5 4.5L20 22z" stroke="#244664" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M14 20v4.5c0 1.8 2.7 3.2 6 3.2s6-1.4 6-3.2V20" stroke="#244664" stroke-width="1.5"/>
+          <path d="M29 18v6" stroke="#244664" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <span class="sec-title">教育背景<span class="sec-en">（Education）</span></span>
+      </div>
+      <div class="sec-body">
+        <div class="entry">
+          <div class="edu-head">
+            <span class="when"><span class="f" data-f="edu1Period">【起止时间】</span></span>
+            <span class="school"><span class="f" data-f="edu1School">【学校/公司名称】</span></span>
+            <span class="major"><span class="f" data-f="edu1Major">【专业/学位】</span></span>
+          </div>
+          <p class="para edu-note"><span class="k">主要荣誉：</span><span class="f" data-f="edu1Honor">【描述】</span></p>
+          <p class="para edu-note"><span class="k">学术成果：</span><span class="f" data-f="edu1Achievement">【描述】</span></p>
+        </div>
+        <div class="entry">
+          <div class="edu-head">
+            <span class="when"><span class="f" data-f="edu2Period">【起止时间】</span></span>
+            <span class="school"><span class="f" data-f="edu2School">【学校/公司名称】</span></span>
+            <span class="major"><span class="f" data-f="edu2Major">【专业/学位】</span></span>
+          </div>
+          <p class="para edu-note"><span class="k">主要荣誉：</span><span class="f" data-f="edu2Honor">【描述】</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 模块：资格证书（Professional Skills） -->
+    <section class="sec" data-page="2">
+      <div class="sec-head">
+        <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
+          <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
+          <path d="M13 13l14 14M27 13L13 27" stroke="#244664" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="13" cy="13" r="2.4" stroke="#244664" stroke-width="1.5"/>
+          <circle cx="27" cy="13" r="2.4" stroke="#244664" stroke-width="1.5"/>
+        </svg>
+        <span class="sec-title">资格证书<span class="sec-en">（Professional Skills）</span></span>
+      </div>
+      <div class="sec-body cert">
+        <div class="f" data-f="certLines" data-multiline="1"><span class="ln">【资格证书/技能 1】</span><span class="ln">【资格证书/技能 2】</span></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+/* 固定双页版式：工具条仅保留「导出 PDF」，打印时自动隐藏。 */
+document.getElementById('btn-print').addEventListener('click', function(){ window.print(); });
+</script>
+</body>
+</html>

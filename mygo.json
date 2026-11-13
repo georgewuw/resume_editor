@@ -1,0 +1,12 @@
+{
+  "name": "resume-editor",
+  "slug": "resume-editor",
+  "identifier": "dev.workbuddy.resume-editor",
+  "version": "0.1.0",
+  "buildCommand": "node scripts/build-web.mjs",
+  "frontendDist": "dist",
+  "out": "build",
+  "windows": {
+    "displayName": "resume-editor"
+  }
+}

@@ -1,0 +1,51 @@
+/* sidebar.css — 最左栏（对应 MyGit 的 nav.go）
+   支持展开态与「图标轨」收起态，收起后仍保留模块编号可点击，功能不丢失。 */
+
+.sidebar{
+  flex:none;width:var(--sidebar-w);min-width:0;
+  background:var(--surface-alt);
+  padding:16px 12px 14px;display:flex;flex-direction:column;min-height:0;overflow:hidden;
+  /* 不做宽度过渡：折叠/拖拽即时生效，避免动画期间布局与测量不一致 */
+}
+.side-head{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 4px 10px;}
+.side-label{
+  margin:0;font-size:10px;font-weight:700;letter-spacing:1.3px;
+  color:var(--ink-3);text-transform:uppercase;white-space:nowrap;
+}
+.side-collapse{
+  width:22px;height:22px;flex:none;display:grid;place-items:center;
+  border:0;border-radius:4px;background:transparent;color:var(--ink-3);
+  --app-region:no-drag;transition:background .14s,color .14s;
+}
+.side-collapse:hover{background:var(--accent-soft);color:var(--accent);}
+.side-collapse svg{width:13px;height:13px;transition:transform .18s;}
+
+.nav-list{list-style:none;margin:0;padding:0;flex:1;overflow-y:auto;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:3px;
+  border-radius:8px;border-left:2px solid transparent;color:var(--ink-2);
+  font-size:13px;cursor:pointer;transition:background .14s,color .14s;
+}
+.nav-item:hover{background:#F0F3F6;color:var(--ink);}
+.nav-item.active{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600;}
+.nav-num{font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;min-width:18px;}
+.nav-item.active .nav-num{color:var(--accent);}
+.nav-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nav-count{font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+
+.side-foot{padding:14px 4px 0;border-top:1px solid var(--line);}
+.progress-track{height:4px;border-radius:999px;background:#E9EDF1;overflow:hidden;}
+.progress-bar{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .3s ease;}
+.side-meta{margin:9px 0 0;font-size:11.5px;color:var(--ink-2);}
+.side-note{margin:5px 0 0;font-size:10.5px;color:var(--ink-3);line-height:1.5;word-break:break-all;}
+
+/* ---------- 收起态：仅显示编号的图标轨 ---------- */
+html.sidebar-collapsed .sidebar{width:var(--sidebar-rail-w);padding:14px 6px;}
+html.sidebar-collapsed .side-label,
+html.sidebar-collapsed .side-foot{display:none;}
+html.sidebar-collapsed .side-head{justify-content:center;padding:0 0 10px;}
+html.sidebar-collapsed .side-collapse svg{transform:rotate(180deg);}
+html.sidebar-collapsed .nav-name,
+html.sidebar-collapsed .nav-count{display:none;}
+html.sidebar-collapsed .nav-item{justify-content:center;padding:10px 0;border-left:0;}
+html.sidebar-collapsed .nav-num{font-size:11px;min-width:0;}

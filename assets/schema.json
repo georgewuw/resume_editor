@@ -1,0 +1,532 @@
+[
+  {
+    "index": 1,
+    "key": "name",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "姓名",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 2,
+    "key": "jobTarget",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "求职意向",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 3,
+    "key": "birth",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "出生年月",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 4,
+    "key": "gender",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "性别",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 5,
+    "key": "nativePlace",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "籍贯",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 6,
+    "key": "phone",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "联系电话",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 7,
+    "key": "email",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "电子邮箱",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 8,
+    "key": "photo",
+    "group": "personal",
+    "groupTitle": "个人信息",
+    "groupEn": "Profile",
+    "label": "证件照",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 9,
+    "key": "brief",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "一句话简述（不加粗）",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 10,
+    "key": "adv1Lead",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 1 条 · 要点（加粗）",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 11,
+    "key": "adv1Text",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 1 条 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 12,
+    "key": "adv2Lead",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 2 条 · 要点（加粗）",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 13,
+    "key": "adv2Text",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 2 条 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 14,
+    "key": "adv3Lead",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 3 条 · 要点（加粗）",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 15,
+    "key": "adv3Text",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 3 条 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 16,
+    "key": "adv4Lead",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 4 条 · 要点（加粗）",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 17,
+    "key": "adv4Text",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 4 条 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 18,
+    "key": "adv5Lead",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 5 条 · 要点（加粗）",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 19,
+    "key": "adv5Text",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 5 条 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 20,
+    "key": "adv6Lead",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 6 条 · 要点（加粗）",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 21,
+    "key": "adv6Text",
+    "group": "advantage",
+    "groupTitle": "个人优势",
+    "groupEn": "Self-Assessment",
+    "label": "第 6 条 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 22,
+    "key": "work1Period",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 1 段 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 23,
+    "key": "work1Company",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 1 段 · 公司名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 24,
+    "key": "work1Dept",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 1 段 · 部门",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 25,
+    "key": "work1Role",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 1 段 · 职位名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 26,
+    "key": "work1Desc",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 1 段 · 工作描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 27,
+    "key": "work2Period",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 2 段 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 28,
+    "key": "work2Company",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 2 段 · 公司名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 29,
+    "key": "work2Dept",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 2 段 · 部门",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 30,
+    "key": "work2Role",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 2 段 · 职位名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 31,
+    "key": "work2Desc",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "第 2 段 · 工作描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 32,
+    "key": "proj1Name",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 1 · 名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 33,
+    "key": "proj1Desc",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 1 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 34,
+    "key": "proj2Name",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 2 · 名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 35,
+    "key": "proj2Desc",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 2 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 36,
+    "key": "proj3Name",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 3 · 名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 37,
+    "key": "proj3Desc",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 3 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 38,
+    "key": "proj4Name",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 4 · 名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 39,
+    "key": "proj4Desc",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 4 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 40,
+    "key": "proj5Name",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 5 · 名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 41,
+    "key": "proj5Desc",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 5 · 描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 42,
+    "key": "proj6Name",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 6 · 名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 43,
+    "key": "proj6Desc",
+    "group": "project",
+    "groupTitle": "项目经验",
+    "groupEn": "Project Experience",
+    "label": "项目 6 · 描述",
+    "type": "lines",
+    "multiline": true
+  },
+  {
+    "index": 44,
+    "key": "edu1Period",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 1 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 45,
+    "key": "edu1School",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 1 · 学校名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 46,
+    "key": "edu1Major",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 1 · 专业 / 学位",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 47,
+    "key": "edu1Honor",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 1 · 主要荣誉",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 48,
+    "key": "edu1Achievement",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 1 · 学术成果",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 49,
+    "key": "edu2Period",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 2 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 50,
+    "key": "edu2School",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 2 · 学校名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 51,
+    "key": "edu2Major",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 2 · 专业 / 学位",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 52,
+    "key": "edu2Honor",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 2 · 主要荣誉",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 53,
+    "key": "certLines",
+    "group": "certificate",
+    "groupTitle": "资格证书",
+    "groupEn": "Professional Skills",
+    "label": "证书 / 技能（每行一条）",
+    "type": "lines",
+    "multiline": true
+  }
+]
