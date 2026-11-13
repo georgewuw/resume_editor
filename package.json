@@ -1,14 +1,23 @@
 {
   "name": "resume-editor",
-  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "A4 双页简历编辑器 · mygo 桌面封装（无需 Bun / Vite / npm 依赖）",
+  "description": "桌面简历编辑器，原生 HTML/CSS/JavaScript，无前端运行时依赖",
   "scripts": {
     "schema": "node scripts/gen-schema.mjs",
     "web": "node scripts/build-web.mjs",
     "dev": "node scripts/build-web.mjs && go tool mygo dev",
     "build": "go tool mygo build -skip-installer",
-    "test": "go test ./..."
+    "build:ubuntu": "go tool mygo build -platform linux/amd64 -skip-installer",
+    "build:macos": "go tool mygo build -platform darwin/arm64 -skip-installer",
+    "build:all": "go tool mygo build -platform windows/amd64,linux/amd64,darwin/arm64 -skip-installer",
+    "wsl": "node scripts/wsl.mjs",
+    "test": "go test ./...",
+    "check": "node scripts/check.mjs && go vet ./... && go tool mygo vet .",
+    "format": "prettier --write \"frontend/**/*.{js,ts,css,html}\" \"scripts/**/*.mjs\" \".github/workflows/*.yml\" docs/editor.json mygo.json package.json .prettierrc.json",
+    "format:check": "prettier --check \"frontend/**/*.{js,ts,css,html}\" \"scripts/**/*.mjs\" \".github/workflows/*.yml\" docs/editor.json mygo.json package.json .prettierrc.json"
+  },
+  "devDependencies": {
+    "prettier": "3.10.0"
   }
 }

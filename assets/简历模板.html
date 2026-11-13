@@ -66,26 +66,6 @@ body{
   print-color-adjust:exact;
 }
 
-/* ---------- 屏幕工具条（打印时隐藏） ---------- */
-.toolbar{
-  position:sticky;top:0;z-index:99;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:10px 18px;background:#1E3850;color:#EAF1F7;
-  font-size:13px;line-height:1.4;
-  box-shadow:0 2px 10px rgba(0,0,0,.18);
-}
-.toolbar .tb-title{font-weight:700;letter-spacing:.5px;margin-right:6px;}
-.toolbar .tb-note{color:#AFC3D4;font-size:12px;}
-.toolbar .spacer{flex:1;}
-.toolbar button{
-  border:1px solid rgba(255,255,255,.35);background:transparent;color:#EAF1F7;
-  padding:6px 13px;border-radius:4px;cursor:pointer;font-size:12.5px;
-  font-family:inherit;transition:background .15s,border-color .15s;
-}
-.toolbar button:hover{background:rgba(255,255,255,.14);}
-.toolbar button.primary{background:#3E7CB1;border-color:#3E7CB1;font-weight:700;}
-.toolbar button.primary:hover{background:#5591C4;}
-
 /* ---------- A4 页面（固定两页） ---------- */
 .page{
   position:relative;
@@ -133,7 +113,7 @@ body.filled .f{background:none;border-bottom:none;padding:0;color:inherit;font:i
 }
 /* 原稿：楷体 / 小四（12pt）/ 三行居中 / 等行距 / 无加粗与颜色区分 */
 .hdr-info{
-  font-family:"KaiTi","楷体","STKaiti","华文楷体","Kaiti SC",serif;
+  font-family:"KaiTi","楷体","STKaiti","华文楷体","Kaiti SC","Noto Serif CJK SC","Songti SC",serif;
   font-size:var(--fs-info);line-height:var(--lh-info);
   color:#1A1A1A;font-weight:400;
 }
@@ -228,24 +208,15 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
 @page{size:A4;margin:0;}
 @media print{
   html,body{background:#FFFFFF !important;}
-  .toolbar{display:none !important;}
   .page{margin:0 !important;box-shadow:none !important;}
   .page-inner{overflow:hidden;}
 }
 @media screen and (max-width:820px){
   .page{transform-origin:top center;}
-  .toolbar{position:static;}
 }
 </style>
 </head>
 <body data-layout="double">
-
-<div class="toolbar" id="toolbar">
-  <span class="tb-title">简历模板 · A4 双页</span>
-  <span class="tb-note">固定双页版式 · 页内 12.4mm 安全边距</span>
-  <span class="spacer"></span>
-  <button type="button" id="btn-print" class="primary">导出 PDF</button>
-</div>
 
 <!-- ======================= 第 1 页 ======================= -->
 <div class="page" id="page-1">
@@ -430,9 +401,5 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
   </div>
 </div>
 
-<script>
-/* 固定双页版式：工具条仅保留「导出 PDF」，打印时自动隐藏。 */
-document.getElementById('btn-print').addEventListener('click', function(){ window.print(); });
-</script>
 </body>
 </html>

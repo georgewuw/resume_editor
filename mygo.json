@@ -6,6 +6,15 @@
   "buildCommand": "node scripts/build-web.mjs",
   "frontendDist": "dist",
   "out": "build",
+  "macos": {
+    "minimumSystemVersion": "15.0"
+  },
+  "linux": {
+    "comment": "简历编辑、实时预览与 PDF 导出",
+    "categories": ["Office"],
+    "formats": ["deb"],
+    "depends": { "deb": ["fonts-noto-cjk"] }
+  },
   "windows": {
     "displayName": "resume-editor"
   }

@@ -1,0 +1,7 @@
+assets/
+build/
+dist/
+.workbuddy/
+.agents/
+mygo.ts
+docs/

@@ -2,14 +2,13 @@ package main
 
 import (
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 
-	"mygo-app/internal/resume"
+	"resume-editor/internal/resume"
 )
 
-// 端到端验证 Go 服务：加载 → 写回 → 填充 → 打印 PDF。
+// 验证不依赖桌面事件循环的 Go 服务：加载 → 写回 → 填充。
 // 用临时目录隔离，不触碰用户真实数据。
 func TestResumeServiceRoundTrip(t *testing.T) {
 	home := t.TempDir()
@@ -56,19 +55,4 @@ func TestResumeServiceRoundTrip(t *testing.T) {
 		t.Error("Fill 输出缺少成品标记或栏目标题")
 	}
 
-	if _, err := resume.FindBrowser(); err != nil {
-		t.Skip("本机没有 Edge / Chrome，跳过 PDF 导出验证")
-	}
-	pdfPath, err := svc.Export(c)
-	if err != nil {
-		t.Fatalf("导出 PDF 失败：%v", err)
-	}
-	b, err := os.ReadFile(pdfPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	pages := len(regexp.MustCompile(`/Type\s*/Page\b`).FindAll(b, -1))
-	if pages != 2 {
-		t.Errorf("PDF 页数应为 2，实际 %d", pages)
-	}
 }

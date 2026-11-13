@@ -1,69 +1,83 @@
 package main
 
-// app 层：把 go:embed 资源与用户数据路径注入 internal/resume 领域服务。
-// 对应 MyGit 根级文件负责装配，internal/ 只处理纯领域逻辑。
-
 import (
 	"embed"
+	"encoding/json"
+	"log/slog"
 	"os"
 	"path/filepath"
 
-	"mygo-app/internal/resume"
+	"resume-editor/internal/apperr"
+	"resume-editor/internal/resume"
 )
 
 //go:embed assets
 var assets embed.FS
 
 const (
-	tplPath    = "assets/简历模板.html"
-	mdPath     = "assets/简历内容.md"
-	schemaPath = "assets/schema.json"
+	tplPath      = "assets/简历模板.html"
+	mdPath       = "assets/简历内容.md"
+	schemaPath   = "assets/schema.json"
+	metadataPath = "assets/app.json"
 )
 
 func readAsset(name string) (string, error) {
-	b, err := assets.ReadFile(name)
+	data, err := assets.ReadFile(name)
 	if err != nil {
-		return "", err
+		return "", apperr.Wrap(apperr.AssetRead, err)
 	}
-	return string(b), nil
+	return string(data), nil
 }
 
-// dataDir 是应用保存用户内容的目录，与开发目录隔离。
-// RESUME_EDITOR_HOME 可覆盖该目录（便携模式与测试用）。
+func readMetadata() (resume.Metadata, error) {
+	var metadata resume.Metadata
+	source, err := readAsset(metadataPath)
+	if err != nil {
+		return metadata, err
+	}
+	if err := json.Unmarshal([]byte(source), &metadata); err != nil {
+		return metadata, apperr.Wrap(apperr.ConfigInvalid, err)
+	}
+	return metadata, nil
+}
+
+// dataDir supports an explicit portable or development data directory.
 func dataDir() string {
-	if d := os.Getenv("RESUME_EDITOR_HOME"); d != "" {
-		return d
+	if dir := os.Getenv("RESUME_EDITOR_HOME"); dir != "" {
+		return dir
 	}
-	if d, err := os.UserConfigDir(); err == nil {
-		return filepath.Join(d, "resume-editor")
+	if dir, err := os.UserConfigDir(); err == nil {
+		return filepath.Join(dir, "resume-editor")
 	}
-	h, _ := os.UserHomeDir()
-	return filepath.Join(h, ".resume-editor")
+	homeDir, _ := os.UserHomeDir()
+	return filepath.Join(homeDir, ".resume-editor")
 }
 
 func newResumeService() (*resume.Resume, error) {
-	tpl, err := readAsset(tplPath)
+	template, err := readAsset(tplPath)
 	if err != nil {
 		return nil, err
 	}
-	md, err := readAsset(mdPath)
+	document, err := readAsset(mdPath)
 	if err != nil {
 		return nil, err
 	}
-	s, err := readAsset(schemaPath)
+	schemaSource, err := readAsset(schemaPath)
 	if err != nil {
 		return nil, err
 	}
-	schema, err := resume.ParseSchema(s)
+	schema, err := resume.ParseSchema(schemaSource)
+	if err != nil {
+		return nil, err
+	}
+	metadata, err := readMetadata()
 	if err != nil {
 		return nil, err
 	}
 	dir := dataDir()
-	return resume.New(resume.Assets{
-		TemplateHTML: tpl,
-		DocumentMD:   md,
-		Schema:       schema,
-		ContentFile:  filepath.Join(dir, "简历内容.md"),
-		OutputDir:    filepath.Join(dir, "output"),
-	}), nil
+	return resume.New(resume.Resources{
+		TemplateHTML: template, DocumentMD: document, Schema: schema, Metadata: metadata,
+	}, resume.StoragePaths{
+		ContentFile: filepath.Join(dir, "简历内容.md"), OutputDir: filepath.Join(dir, "output"),
+	}, renderPDF, slog.Default())
 }

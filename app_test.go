@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo"
-	"mygo-app/internal/resume"
+	"resume-editor/internal/resume"
 )
 
 // 根级集成测试：验证 go:embed 资源、领域层装配与窗口顶栏配置。
@@ -75,8 +75,8 @@ func TestCustomTitleBar(t *testing.T) {
 	if o.TitleBarStyle != mygo.TitleBarHidden {
 		t.Error("应隐藏原生标题栏")
 	}
-	if !o.HideWindowButtons {
-		t.Error("应隐藏系统窗口按钮，改由页面自绘")
+	if o.HideWindowButtons {
+		t.Error("应保留各平台的原生窗口按钮")
 	}
 	if o.TitleBarHeight != titleBarHeight {
 		t.Errorf("顶栏高度应为 %d，实际 %d", titleBarHeight, o.TitleBarHeight)

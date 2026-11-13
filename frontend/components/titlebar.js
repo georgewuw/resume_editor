@@ -1,69 +1,60 @@
-/* components/titlebar.js — 自绘顶栏的交互入口
-   1) 模块切换下拉（与左侧导航共用同一份 groups 数据）
-   2) 当前模块面包屑
-   3) 窗口控制按钮（仅 mygo 桌面模式，浏览器降级模式自动隐藏） */
-(function () {
-  'use strict';
-  var UI = window.ResumeUI = window.ResumeUI || {};
-  var $ = function (id) { return document.getElementById(id); };
-  var btn = $('btnModules'), menu = $('moduleMenu'), crumb = $('crumb');
-  var groups = [], active = '';
+import { element } from '../dom.js';
+
+// Native window controls are managed by mygo; this component owns navigation.
+export function createTitlebar({ groups, onSelect, platform }) {
+  const button = element('btnModules');
+  const menu = element('moduleMenu');
+  element('btnSidebar').title = '收起 / 展开侧栏（' + platform.shortcutLabel('b') + '）';
+  let active = '';
 
   function closeMenu() {
     menu.hidden = true;
-    btn.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-expanded', 'false');
   }
 
   function renderMenu() {
-    menu.innerHTML = '';
-    groups.forEach(function (g, i) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('role', 'menuitem');
-      b.className = g.id === active ? 'active' : '';
-      var num = document.createElement('span');
-      num.className = 'menu-num';
-      num.textContent = String(i + 1).padStart(2, '0');
-      var name = document.createElement('span');
-      name.textContent = g.title;
-      b.append(num, name);
-      b.addEventListener('click', function () {
+    menu.replaceChildren();
+    groups.forEach((group, index) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.setAttribute('role', 'menuitem');
+      item.className = group.id === active ? 'active' : '';
+      const number = document.createElement('span');
+      number.className = 'menu-num';
+      number.textContent = String(index + 1).padStart(2, '0');
+      const name = document.createElement('span');
+      name.textContent = group.title;
+      item.append(number, name);
+      item.addEventListener('click', () => {
         closeMenu();
-        document.dispatchEvent(new CustomEvent('resume:select-group', { detail: { id: g.id } }));
+        onSelect(group.id);
       });
-      menu.appendChild(b);
+      menu.appendChild(item);
     });
   }
 
-  btn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    if (menu.hidden) { renderMenu(); menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); }
-    else closeMenu();
-  });
-  document.addEventListener('click', function (e) {
-    if (!menu.hidden && !menu.contains(e.target)) closeMenu();
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeMenu();
-  });
-
-  document.addEventListener('resume:groups', function (e) {
-    groups = (e.detail && e.detail.groups) || [];
-  });
-  document.addEventListener('resume:group', function (e) {
-    var d = e.detail || {};
-    active = d.id || '';
-    crumb.textContent = d.title || '内容模块';
+  function setActive(id) {
+    active = id;
+    element('crumb').textContent = groups.find((group) => group.id === id)?.title || '内容模块';
     if (!menu.hidden) renderMenu();
-  });
-
-  // 原生标题栏已隐藏，窗口由页面上的三个按钮驱动
-  var w = (window.mygo && window.mygo.window) || null;
-  if (w) {
-    $('winMin').addEventListener('click', function () { w.minimize(); });
-    $('winMax').addEventListener('click', function () { w.toggleMaximize(); });
-    $('winClose').addEventListener('click', function () { w.close(); });
   }
 
-  UI.titlebar = { closeMenu: closeMenu };
-})();
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (menu.hidden) {
+      renderMenu();
+      menu.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
+    } else {
+      closeMenu();
+    }
+  });
+  document.addEventListener('click', (event) => {
+    if (!menu.hidden && !menu.contains(event.target)) closeMenu();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMenu();
+  });
+
+  return { setActive };
+}

@@ -1,4 +1,4 @@
-module mygo-app
+module resume-editor
 
 go 1.27.4
 

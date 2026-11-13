@@ -1,229 +1,186 @@
 # 简历编辑器 · resume-editor
 
-一个基于 [mygo](https://github.com/egoist/mygo) 的桌面简历编辑器，内置固定双页 A4 简历模板：左侧模块导航、中间字段表单、右侧实时预览，编辑后自动保存，可一键导出 PDF。
+基于 Go 和 mygo 的桌面简历编辑器，面向 Windows、Ubuntu 和 macOS。左侧按模块导航，中间编辑字段，右侧实时预览；内容自动保存，可导出固定双页 A4 PDF。
 
-- **技术栈**：Go 1.27 + mygo v0.9.0（WebView2） + 原生 HTML / CSS / JavaScript。
-- **零前端依赖**：不需要 `npm install`、Vite、Bun 或打包器，构建脚本只用 Node 标准库。
-- **一套前端两种运行方式**：mygo 桌面模式调用 Go 服务读写文件；浏览器直接打开 `dist/index.html` 时自动降级为纯前端模式。
-- 界面与目录划分参考 [MyGit](https://github.com/Binaryify/MyGit)：根级负责装配与窗口，`internal/` 负责领域逻辑，`frontend/` 按界面区域拆分。
+前端使用原生 HTML、CSS、JavaScript ES 模块，只通过 mygo 调用 Go 服务。模板解析、字段校验与渲染全部由 Go 负责。
 
----
+## 开发与构建
 
-## 1. 环境要求
+开发需要 Go 1.27.4+、Node.js 22+。运行环境与构建产物如下：
 
-| 依赖 | 版本 / 说明 |
-| --- | --- |
-| Go | 1.27.4+（`go.mod` 中 `go 1.27.4`，并用 `tool` 指令固定 mygo v0.9.0） |
-| Node.js | 22+，仅用于执行两个 `.mjs` 脚本与让 mygo 评估配置 |
-| mygo CLI | `go tool mygo ...` 会直接使用 `go.mod` 固定版本；全局 CLI 可选：`go install github.com/egoist/mygo/cmd/mygo@latest`（用于 `mygo doctor`） |
-| 操作系统 | Windows（编译产物输出到 `build/windows-amd64/`，需 WebView2，Win10/11 一般已自带） |
-| Edge / Chrome | 导出 PDF 时通过无头打印调用，`internal/resume/render.go` 的 `FindBrowser()` 按固定路径 + PATH 查找 |
-| Bun | **不需要**，项目刻意不使用 |
-
-> 若 Go 模块走官方代理失败，可设 `GOPROXY=https://goproxy.cn,direct` 与 `GOSUMDB=sum.golang.google.cn`。
-
----
-
-## 2. 快速开始
-
-在项目根目录执行（PowerShell / Git Bash 均可）：
-
-```bash
-# 1) 生成静态前端（同时把 docs/ 原稿同步到 assets/）
-node scripts/build-web.mjs
-
-# 2) 校验（字段双向一致性、写回格式、PDF 页数）
-go test ./...
-
-# 3) 编译桌面应用
-go tool mygo build -skip-installer
-```
-
-等价的 npm 脚本（**无需 `npm install`**）：
-
-```bash
-npm run web      # = node scripts/build-web.mjs
-npm run test     # = go test ./...
-npm run build    # = go tool mygo build -skip-installer
-npm run dev      # = npm run web && go tool mygo dev（启动桌面开发窗口）
-npm run schema   # = node scripts/gen-schema.mjs（仅改动模板字段后需要）
-```
-
-`mygo.json` 的 `buildCommand` 已指向 `node scripts/build-web.mjs`，所以 `go tool mygo build` 会**自动先执行前端构建**，直接跑第 3 步也可以。
-
-### 产物
-
-| 路径 | 说明 |
-| --- | --- |
-| `dist/index.html` | 静态前端成品，可直接用浏览器打开（降级模式） |
-| `build/windows-amd64/resume-editor.exe` | 桌面应用，文件名由 `mygo.json` 的 `name` 决定 |
-| `%APPDATA%\resume-editor\简历内容.md` | 桌面模式下用户实际编辑的内容文件 |
-| `%APPDATA%\resume-editor\output\` | 导出结果：`成品简历.pdf`，以及 Edge 打印所需的中间文件 `成品简历.html` |
-
-> **命名说明**：`mygo.json` 的 `name` 决定 exe 文件名，`windows.displayName` 写入 exe 版本资源、决定进程名与任务管理器显示名；`slug` / `identifier` 用于安装目录与应用标识。当前三者均为 `resume-editor`，因此编译产出 `resume-editor.exe`。应用内界面文字保持中文，与这些名称无关。
->
-> **版本控制**：`dist/`、`build/`、`mygo.ts` 都是生成物，已由 `.gitignore` 排除、**不入库**；干净 clone 后按上面三步执行即可得到它们。仓库必须保留 `assets/`（`//go:embed` 的编译输入）与 `docs/`（模板与内容原稿），否则 `go build` / `go test` 会因缺少内嵌资源而失败。
-
-可用环境变量 `RESUME_EDITOR_HOME` 覆盖数据目录（便携模式、测试隔离）。
-
----
-
-## 3. 项目结构
-
-```
-resume_polishing/
-├── README.md                    本文件：结构 / 编译 / 接续开发
-├── mygo.json                    mygo 应用配置（名称、版本、构建命令、输出目录）
-├── package.json                 npm 脚本，无任何依赖
-├── go.mod / go.sum              Go 模块，tool 指令固定 mygo v0.9.0
-├── mygo.ts                      [自动生成] 前端 TypeScript 绑定，勿手改
-│
-│  ── 装配层（根级 .go，对标 MyGit 的 titlebar.go / main.go）──
-├── main.go                      入口：绑定服务、创建主窗口
-├── titlebar.go                  隐藏原生标题栏的 WindowOptions
-├── assets.go                    go:embed 资源、数据目录、服务装配
-├── app_test.go                  根级集成测试
-├── service_test.go              端到端服务测试（含 PDF 页数）
-│
-├── internal/resume/             领域层：纯逻辑，不依赖窗口 / 资源路径
-│   ├── document.go              Markdown 解析、53 字段校验、写回
-│   ├── render.go                模板填充、Edge 无头打印 PDF
-│   ├── service.go               Resume 服务（mygo.Bind 暴露给前端）
-│   └── resume_test.go           纯逻辑单测
-│
-├── frontend/                    编辑器源码
-│   ├── index.html               结构骨架：顶栏 / 侧栏 / 编辑区 / 预览
-│   ├── app.js                   数据、表单、预览、保存的编排
-│   ├── components/titlebar.js   顶栏模块切换 + 自绘窗口控制按钮
-│   ├── components/panes.js      两条中线分隔条 + 侧栏折叠
-│   └── styles/                  base / titlebar / sidebar / workspace
-│                               按此顺序拼接成 dist/style.css
-│
-├── scripts/
-│   ├── gen-schema.mjs           模板 data-f → assets/schema.json（字段元数据）
-│   └── build-web.mjs            docs → assets 同步 + 生成 dist/
-│
-├── docs/                        ★ 人编辑的唯一真相源
-│   ├── 简历内容.md              纯数据：6 个模块 + 53 个 @@字段块
-│   ├── 简历模板.html            唯一版式原稿（A4、CSS、栏目文案、data-f 占位）
-│   ├── 内容文档规范.md          字段语法、版式刻度、填写与构建规则
-│   └── 求职档案.md 等           参考资料
-│
-├── assets/                      [同步/生成] go:embed 副本：模板、内容 md、schema.json
-├── resources/icon.png           应用图标
-├── dist/                        [生成] 静态前端
-├── build/                       [生成] 可执行文件
-└── .agents/                     项目内 mygo 维护技能说明
-```
-
-**标注 `[生成]` 的目录不要手工编辑**：`assets/` 由 `build-web.mjs` 从 `docs/` 同步，`dist/` 由构建脚本整体重建，`mygo.ts` 由 mygo 编译时生成。`.workbuddy/` 是项目数据目录，不要删除。
-
----
-
-## 4. 架构与数据流
-
-```
-docs/简历模板.html ──┐
-docs/简历内容.md   ──┼─→ build-web.mjs ─→ assets/ ──→ go:embed (assets.go)
-                    │                          └─→ internal/resume ─→ mygo.Bind
-                    │                                                   ↓
-                    └─→ dist/data.js ──→ 浏览器降级模式            window.mygo.call
-                                                                       ↓
-                                                              frontend/app.js
-```
-
-- **桌面模式**：`app.js` 的 `mygoBackend` 通过 `window.mygo.call("Resume.*")` 调用 Go；Go 服务用 `go:embed` 中的模板与默认内容，用户数据落在数据目录的 `简历内容.md`。
-- **浏览器降级模式**：`browserBackend` 用 `dist/data.js` 内嵌的模板 / schema / 初始内容，内容存 `localStorage`（key `resume-editor-content`），导出 PDF 用 `window.open` + `print()`。分栏偏好另存为 `resume-editor-panes`。
-- **两种模式共用同一套渲染规则**：Go 的 `FillTemplate`（`internal/resume/render.go`）与 JS 的 `fillTemplate`（`frontend/app.js`）都是扫描 `data-f="..."` 并替换占位元素，**改动其一必须同步其二**，否则预览与导出结果会不一致。
-- **前端模块解耦**：`components/*.js` 与 `app.js` 只通过 `document` 自定义事件通信：`resume:groups`、`resume:group`、`resume:select-group`、`resume:pane-resize`。
-- **Go 服务契约**：类型名必须是 `Resume`（`mygo.Bind` 据此生成 `Resume.*`）。当前 5 个导出方法：`Load` / `Fill` / `Save` / `Export` / `Info`。内部辅助方法一律小写不导出，否则会被误暴露成前端 API。
-
----
-
-## 5. 如何接续开发
-
-### 5.1 按改动场景找文件
-
-| 想做什么 | 改哪里 | 之后必跑 |
+| 平台 | 运行依赖 | 构建产物 |
 | --- | --- | --- |
-| 只换简历文字 | `docs/简历内容.md` | `npm run web` |
-| 改版式 / 配色 / 分页 / 栏目标题 | `docs/简历模板.html` | `npm run web && npm run test` |
-| 增删字段 | `docs/简历模板.html` 的 `data-f` + `docs/简历内容.md` 的 `@@` 块 | `npm run schema && npm run web && npm run test` |
-| 改字段中文标签 / 分组 / 控件类型 | `scripts/gen-schema.mjs` 的 `LABELS` / `GROUPS` / `typeOf` | `npm run schema && npm run web` |
-| 改界面样式 | `frontend/styles/*.css`（拼接顺序：base → titlebar → sidebar → workspace，后者覆盖前者） | `npm run web`，浏览器打开 `dist/index.html` 看效果 |
-| 改顶栏交互 / 窗口按钮 | `frontend/components/titlebar.js` + `frontend/index.html` | `npm run web` |
-| 改分栏宽度 / 折叠 | `frontend/components/panes.js` + `frontend/styles/workspace.css`、`base.css` 的宽度变量 | `npm run web` |
-| 改表单、预览、保存逻辑 | `frontend/app.js` | `npm run web && npm run test` |
-| 加 Go 服务方法 | `internal/resume/service.go`（及 `document.go` / `render.go`） | `go test ./... && go tool mygo build -skip-installer` |
-| 改启动窗口尺寸 / 标题 / 顶栏高度 | `windowsize.go`（尺寸比例与上下限）、`titlebar.go`，并同步 `base.css` 的 `--titlebar-h`（当前 40px） | `npm run build` |
-| 改应用名 / 版本 / 输出目录 | `mygo.json` | `npm run build` |
-| 改字段规则、填写规范、版式说明 | `docs/内容文档规范.md`（**不要**写回 `简历内容.md`，它是纯数据文件） | 无 |
+| Windows 10/11 x64 | WebView2 Runtime | `build/windows-amd64/resume-editor.exe` |
+| Ubuntu 22.04+ x64 | GTK 3、WebKitGTK 4.1、中文字体 | `build/linux-amd64/` 下的可执行文件、`.deb` 和安装归档 |
+| macOS 15+，Apple Silicon | 系统自带 WKWebView | `build/darwin-arm64/resume-editor.app`，在 macOS 上另生成 `.dmg` |
 
-### 5.2 几条必须遵守的约定
+Ubuntu 的 WebView 和中文字体依赖可用以下命令安装，`.deb` 包也声明了这些依赖：
 
-1. **`docs/` 是唯一真相源**。改完必须跑 `npm run web`，脚本会把 `docs/简历模板.html`、`docs/简历内容.md` 同步到 `assets/` 并重建 `dist/`；直接改 `assets/` 会在下次构建时被覆盖。
-2. **53 字段双向校验**。`build-web.mjs` 与 Go 的 `Validate()` 都会比对模板 `data-f` 集合与内容文档 `@@` 字段集合，缺一个或多一个都会直接报错。`app_test.go` 也写死了 `53`，增删字段时要同步这个断言。
-3. **内容文档保持纯数据**：只有 `## 模块…` 标题、`@@字段ID` 和值行，不要加说明、注释或字段索引。编辑器保存时会按 `schema.json` 顺序重写同格式 Markdown，测试里有「写回结果与原稿逐字一致」的断言。
-4. **模板占位元素的写法**：带 `data-f` 的标签必须有对应的闭合标签（扫描器按标签名查找 `</tag>`）；`data-multiline` 字段每行渲染成独立一行；`photo` 字段支持 `![证件照](./photo.jpg)` 语法。
-5. **分页是固定的**：模板内部两页各自独立容器 + `overflow:hidden` + 显式分页，第 1 页放个人信息 / 个人优势 / 工作经历 / 项目 1~4，第 2 页放项目 5~6 / 教育背景 / 资格证书。描述过长时优先精简文字，不要改间距破坏分页。
-6. **不要给 `.sidebar` / `.preview` 加 `transition:width`**：无头浏览器 / 虚拟时间环境下过渡会冻结，导致折叠后宽度不生效（已踩过坑，现在改为即时生效）。
-7. **两种运行方式都要自测**：桌面模式改 Go 后要编译；浏览器模式改前端后直接开 `dist/index.html` 即可，不必编译 exe。
+~~~bash
+sudo apt update
+sudo apt install libwebkit2gtk-4.1-0 fonts-noto-cjk
+~~~
 
-### 5.3 加一个 Go 服务方法的完整流程
+~~~powershell
+npm run web       # Go 生成资源和字段定义，Node 复制前端模块、合并样式
+npm run dev       # 构建前端并启动 mygo 开发窗口
+npm run check     # JS 语法检查、Go 静态检查，不执行测试
+npm run build         # 构建当前系统与架构
+npm run build:ubuntu  # 构建 Linux x64 和 Ubuntu .deb
+npm run build:macos   # 构建 macOS 15+ Apple Silicon app
+npm run build:all     # 构建上述所有目标及 Windows x64
+~~~
 
-1. 在 `internal/resume/service.go` 添加导出方法（参数 / 返回值用可 JSON 序列化的类型）。
-2. 在 `frontend/app.js` 的 `mygoBackend` 加 `window.mygo.call('Resume.Xxx', ...)`；同时在 `browserBackend` 提供等价实现，否则降级模式会报错。
-3. 在 `app_test.go` / `service_test.go` 补断言。
-4. 跑 `gofmt -w . && go test ./...`；`go tool mygo build -skip-installer` 会重新生成 `mygo.ts`，核对里面的方法名与前端调用一致。
+构建命令仅使用 Go 和 Node 标准库，不需要先安装 npm 依赖。mygo 的版本通过 go.mod 固定；桌面构建会自动执行前端构建。
 
----
+可以从 Windows 交叉构建 Ubuntu 可执行文件、`.deb` 和 macOS `.app`。macOS 签名与 `.dmg` 制作需要在 Mac 上运行；正式分发时可配置 `macos.signingIdentity` 和公证信息，默认使用 mygo 的临时签名方式。
 
-## 6. 验证清单
+`.github/workflows/build.yml` 分别在 Windows、Ubuntu 和 macOS 执行格式检查、静态检查及桌面构建，并保存构建产物；不执行测试，也不发布版本。
 
-```bash
-gofmt -l .                  # 应无输出
-go vet ./...
-go test ./...               # 或 go test -count=1 -v ./... 强制重跑
-node scripts/build-web.mjs  # 会打印字段数，应为 53
-go tool mygo build -skip-installer
-```
+统一格式使用可选开发工具 Prettier，版本由 package-lock.json 锁定：
 
-测试覆盖的关键点（`app_test.go` / `service_test.go` / `internal/resume/resume_test.go`）：
+~~~powershell
+npm ci
+npm run format
+npm run format:check
+~~~
 
-- 内嵌资源可读取、schema 与内容文档均为 53 个字段且与模板 `data-f` 完全一致；
-- `WriteMarkdown` 输出与 `docs/简历内容.md` 逐字一致（不含说明、`::` 注释）；
-- `FillTemplate` 的 HTML 转义、`class="filled"` 成品标记；
-- 自定义顶栏配置（`TitleBarHidden` / `HideWindowButtons` / 高度 40）；
-- 「`Load → Save → Fill → Export`」端到端，用 `RESUME_EDITOR_HOME` 隔离到临时目录，校验 PDF 恰为 **2 页**；本机无 Edge/Chrome 时该段自动跳过。
+Go 文件使用 gofmt。编辑器缩进与换行约定见 .editorconfig，JS/CSS/HTML 格式见 .prettierrc.json。
 
-需要目视验证界面时，可用 Edge 无头截图（不需要装额外工具）：
+### Windows → WSL Ubuntu 安装与启动
 
-```bash
-msedge --headless=new --disable-gpu --no-sandbox \
-  --user-data-dir="$TEMP/resume-shot" --window-size=1440,920 \
-  --force-device-scale-factor=1 --virtual-time-budget=6000 \
-  --screenshot=editor.png "file:///E:/Projects/WorkBuddy/resume_polishing/dist/index.html"
-```
+Windows 已安装 WSL2、WSLg 和 Ubuntu x64，并为 Ubuntu 配置普通默认用户后，可以一条命令完成构建、安装和打开界面：
 
----
+~~~powershell
+npm run wsl
+npm run wsl -- --skip-build             # 打包已完成，直接安装最新的 Ubuntu x64 .deb
+npm run wsl -- --distro Ubuntu-24.04    # 指定 WSL 发行版，默认 Ubuntu
+npm run wsl -- --package "E:/产物/resume-editor_0.1.0_amd64.deb"
+~~~
 
-## 7. 常见问题
+脚本通过 WSL 的 root 用户安装 `.deb` 及包声明的依赖，不需要输入 sudo 密码；应用以 Ubuntu 的普通默认用户运行。更新前会关闭该用户运行的已安装版，安装位置为 `/opt/resume-editor/`，用户简历和导出文件仍使用 Ubuntu 中的原数据目录。安装阶段会补齐程序执行权限，兼容 mygo 0.9 在 Windows 上交叉打包时记录的文件权限。脚本等待编辑器加载完成后退出，WSLg 窗口继续运行。`--skip-build` 会按修改时间选择最新的安装包；`--package` 指定文件并跳过构建。
 
-| 现象 | 原因 / 处理 |
+如果窗口只出现在任务栏、标题带 `[WARN:COPY MODE]`，脚本会检测 WSLg 的共享内存图形通道并停止。关闭其他 Linux 图形应用后，可用以下命令自动重建故障会话，再安装和启动：
+
+~~~powershell
+npm run wsl -- --skip-build --repair-wslg
+~~~
+
+`--repair-wslg` 只在图形通道故障时重建 WSLg，会关闭所有 Linux 图形窗口，不会终止 Ubuntu 后台服务。安装使用 Ubuntu 已配置的 APT 软件源；首次安装缺少包索引时自动刷新索引，软件源不可访问时需先修复软件源再重试。
+
+应用使用独立进程启动，脚本退出后继续运行，Windows 下可能额外显示一个 WSL 终端窗口。启动输出保存在 `~/.local/state/resume-editor/wsl-launch.log`（设置 `XDG_STATE_HOME` 时使用其对应目录），每次由脚本启动都会覆盖；应用自身的按日日志仍保存在数据目录的 `logs/`。`npm run wsl -- --help` 可查看全部参数。
+
+## 目录与职责
+
+~~~text
+main.go                         启动、日志生命周期、服务绑定、窗口创建
+assets.go                       内嵌资源读取、数据路径、服务装配
+titlebar.go / windowsize.go      原生窗口配置
+pdf.go                          隐藏 WebView 的加载、原生 PDF 打印与释放
+internal/
+  apperr/errors.go               全项目错误码、安全提示和错误封装
+  logging/logging.go             JSON 日志初始化与统一失败记录
+  resume/
+    config.go                   资源、存储路径和应用元数据类型
+    document.go                 Markdown 解析与序列化
+    schema.go                   字段和分组定义、schema 生成
+    template.go                 唯一字段扫描器、模板编译、校验与渲染
+    export.go                   PDF 渲染函数类型、中间 HTML 与成品 PDF 存储
+    service.go                  Load/Fill/Save/Export/Info/Log 服务编排
+cmd/resume-assets/main.go       使用运行时规则生成构建资源
+frontend/
+  app.js                        应用装配和启动
+  backend.js                    唯一 mygo 桥接适配器
+  platform.js                   macOS Command / 其他平台 Ctrl 快捷键约定
+  content.js                    文档快照，兼容系统 WebView
+  actions.js                    自动保存和导出流程
+  errors.js / logger.js         前端错误归一化与结构化日志
+  dom.js                        DOM 查询和 CSS 数值读取
+  contracts.js / data.d.ts       模块契约与生成数据声明
+  components/                   editor / preview / titlebar / panes / notices
+  styles/                       全局设计变量及各区域样式
+scripts/                        前端构建、资源生成、语法检查与 Windows → WSL 部署
+docs/                           人编辑的内容、模板、字段配置与填写规范
+assets/                         提交到仓库的生成资源，供 go:embed 使用
+dist/                           生成的前端模块及 data.js
+build/                          桌面构建产物
+~~~
+
+Go 服务在创建时显式接收 Resources、StoragePaths、PDF 渲染函数和日志实例。模板只编译一次，预览和 PDF 导出复用同一个 Template。简历模块负责输出文件存储，桌面适配器接收中间 HTML 路径并返回 PDF 字节，集中管理原生窗口生命周期。
+
+前端组件通过参数和回调协作。界面模块不直接调用 mygo，不使用全局模块注册表或自定义事件总线。各组件保管自己的界面状态和定时器，app.js 负责组装协作关系。
+
+## 数据与构建流程
+
+人编辑的源文件：
+
+- docs/简历内容.md：默认内容，只有模块标题、@@字段 ID 和值行。
+- docs/简历模板.html：版式及 data-f 字段，字段顺序和多行属性以模板为准。
+- docs/editor.json：分组名称、英文名、说明，以及每个字段的标签、控件类型和可选提示。
+- mygo.json：应用名称和版本的唯一配置来源。
+
+每次 npm run web 都会调用 cmd/resume-assets，使用 Go 中的同一套解析、扫描和校验规则：
+
+~~~text
+docs/内容 + 模板 + editor.json + mygo.json
+                  ↓
+          cmd/resume-assets
+                  ↓
+     assets/模板、内容、schema.json、app.json
+                  ↓
+        dist/data.js + 前端 ES 模块
+~~~
+
+schema 会自动更新，无需记住单独的生成步骤。npm run schema 保留为只生成资源的便捷入口。不要直接编辑 assets/、dist/、build/ 或生成的 mygo.ts。
+
+mygo.ts 是 mygo 自动生成的客户端参考文件；原生 JS 前端的调用集中在 backend.js，模块数据结构由 contracts.js 的 JSDoc 描述。
+
+## 扩展入口
+
+| 改动 | 位置 |
 | --- | --- |
-| 编译时提示目录被占用 | 应用正在运行，关闭窗口后重试；或用 `go tool mygo build -skip-installer -o build-fresh` 编译到独立目录再替换 |
-| `go tool mygo` 拉取依赖失败 | 配置 `GOPROXY=https://goproxy.cn,direct`、`GOSUMDB=sum.golang.google.cn` |
-| 导出 PDF 报「未找到 Edge / Chrome」 | 在 `internal/resume/render.go` 的 `FindBrowser()` 候选路径里补上本机浏览器路径 |
-| 浏览器模式点「导出 PDF」无反应 | 打印窗口被拦截，允许本站弹出窗口后重试；打印对话框选 A4 / 缩放 100% / 勾选「背景图形」，否则深蓝横条不会打印 |
-| 改了 `docs/` 但界面没变化 | 忘了跑 `npm run web`，或页面缓存了旧的 `data.js`（强制刷新） |
-| 预览与导出结果不一致 | Go 的 `FillTemplate` 与 JS 的 `fillTemplate` 扫描规则被改得不同步 |
-| 新增字段后应用报错 | 三处没对齐：模板 `data-f`、内容文档 `@@`、`schema.json`（需 `npm run schema`）；`app_test.go` 的 53 也要改 |
-| 内容文档越看越像说明文档 | 只应改 `docs/简历内容.md` 的值行；规则写在 `docs/内容文档规范.md` |
+| 修改默认内容 | docs/简历内容.md |
+| 新增字段 | 模板 data-f、内容 @@ 块、docs/editor.json 的 fields |
+| 新增分组 | docs/editor.json 的 groups，并为字段指定 group |
+| 修改标签、控件或提示 | docs/editor.json，支持 text / textarea / lines |
+| 修改版式、配色或分页 | docs/简历模板.html |
+| 扩展字段渲染规则 | internal/resume/template.go |
+| 增加简历操作 | internal/resume/service.go、frontend/backend.js、actions.js |
+| 修改编辑控件或预览 | frontend/components/editor.js 或 preview.js |
+| 修改分栏几何 | frontend/styles/base.css 的 CSS 变量 |
+| 修改窗口尺寸策略 | windowsize.go |
+| 增加错误码 | internal/apperr/errors.go；重新构建后自动同步到前端 |
 
----
+布局数值由 CSS 变量提供，JS 读取这些变量。窄窗口规则统一放在 workspace.css，分栏组件读取实际布局状态，不再重复声明媒体断点。原生标题栏高度由 mygo 提供给前端。
 
-## 8. 相关文档
+标题栏遵循 MyGit 的做法：保留各平台原生窗口按钮，用 mygo 的 `--mygo-titlebar-*` 变量避让其空间。macOS 使用红绿灯按钮，Ubuntu 使用桌面主题指定的按钮布局，页面只绘制工具栏。系统隐藏按钮或进入全屏时，CSS 仍保留工具栏的最小内容高度。
 
-- `docs/内容文档规范.md` — 字段语法、53 项校验、特殊字段、A4 双页版式刻度、填写规范、编辑器交互。
-- `docs/简历模板.html` — 版式与样式的唯一实现，`#244664` 主色、楷体页眉、A4 打印规则都在这里。
-- `.agents/skills/` — 项目内附带的 mygo 维护规范（升级 mygo、改 UI、依赖变更时的注意事项）。
+快捷键在 macOS 上为 `⌘S` 保存、`⌘B` 收起侧栏，其他平台为 `Ctrl+S`、`Ctrl+B`。正文与界面提供系统中文字体及 Noto CJK 回退；不同系统字体和 WebView 的排版可能略有不同，分享时以导出的 PDF 为准。
+
+## 数据目录、错误与日志
+
+默认数据目录遵循系统的用户配置目录；可用环境变量 `RESUME_EDITOR_HOME` 覆盖，适用于便携运行和开发隔离：
+
+| 平台 | 默认目录 |
+| --- | --- |
+| Windows | `%APPDATA%/resume-editor` |
+| Ubuntu | `$XDG_CONFIG_HOME/resume-editor`，未设置时为 `~/.config/resume-editor` |
+| macOS | `~/Library/Application Support/resume-editor` |
+
+~~~text
+数据目录/
+  简历内容.md
+  output/成品简历.html
+  output/成品简历.pdf
+  logs/YYYY-MM-DD.jsonl
+~~~
+
+日志文件按启动日期命名并追加写入，同时输出到标准错误流。记录启动/关闭、内容加载/保存、导出起止与耗时、前端错误等事件；不记录字段值、简历正文或联系方式。前端日志写入开发者控制台，并通过 Resume.Log 转发到同一桌面日志文件。
+
+PDF 导出通过 mygo 的 `Page.PrintToPDF` 完成，无需安装 Chrome、Edge 或 Chromium 浏览器，也无需配置浏览器路径。Windows 使用 WebView2 Runtime，Ubuntu 使用 WebKitGTK 的打印到文件能力，macOS 使用系统 WKWebView 打印能力；这些运行时同时用于应用界面。Windows 的 WebView2 内部仍使用 Chromium 内核。
+
+每次导出创建隐藏的临时 WebView，加载 `output/成品简历.html`，等待字体与图片就绪后按 A4、零页边距、保留背景色打印，并在结束时释放窗口。相对图片路径以 `output/` 为基准。PDF 和预览的排版均由所在平台的 WebView 渲染。
+
+错误码和安全中文提示只在 internal/apperr/errors.go 定义。Go 错误保留原始 cause 供本地日志排查；mygo v0.9 的错误桥接采用字符串，因此对外传输 JSON 格式的 code/message，前端统一解析。提示中的错误码可用于对应日志，原始异常不直接展示给用户。
+
+新增对外服务方法时，参数和返回值应可 JSON 序列化；辅助方法保持不导出，避免被 mygo.Bind 暴露。新增前端调用集中在 backend.js，其他组件依赖其接口。

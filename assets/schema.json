@@ -77,7 +77,9 @@
     "groupEn": "Profile",
     "label": "证件照",
     "type": "text",
-    "multiline": false
+    "multiline": false,
+    "hint": "可填图片路径",
+    "placeholder": "【证件照】 或 ![证件照](./photo.jpg)"
   },
   {
     "index": 9,

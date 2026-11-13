@@ -1,117 +1,167 @@
 /* titlebar.css — 自定义顶栏（替代被隐藏的原生标题栏）
-   参考 MyGit：单行系统层，左侧上下文切换 + 状态，右侧动作按钮组 + 窗口控件；
+   单行系统层，左侧上下文切换 + 状态，右侧动作按钮组；
    中间留白即窗口拖拽区（mygo 用 --app-region: drag 识别）。 */
 
-.titlebar{
-  --app-region:drag;
-  flex:none;
-  height:max(var(--titlebar-h),var(--mygo-titlebar-height,0px));
-  min-height:40px;
-  display:flex;align-items:center;gap:10px;
-  padding-left:max(10px,var(--mygo-titlebar-inset-left,0px));
-  padding-right:max(10px,var(--mygo-titlebar-inset-right,0px));
-  background:var(--chrome);
-  border-bottom:1px solid var(--line-strong);
-  user-select:none;position:relative;z-index:20;
+.titlebar {
+  --app-region: drag;
+  flex: none;
+  height: max(var(--titlebar-h), var(--mygo-titlebar-height, 0px));
+  min-height: var(--titlebar-h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: calc(10px + var(--mygo-titlebar-inset-left, 0px));
+  padding-right: calc(10px + var(--mygo-titlebar-inset-right, 0px));
+  background: var(--chrome);
+  border-bottom: 1px solid var(--line-strong);
+  user-select: none;
+  position: relative;
+  z-index: 20;
 }
 
-.tb-left{flex:1;min-width:0;display:flex;align-items:center;gap:8px;}
-.tb-right{flex:none;display:flex;align-items:center;gap:8px;--app-region:no-drag;}
+.tb-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 /* 交互元素显式取消拖拽，避免被桥接层判定为窗口拖动 */
-.tb-icon,.tb-switch,.tb-menu,.btn,.win-btn,.save-state{--app-region:no-drag;}
-
-.tb-icon{
-  width:26px;height:26px;flex:none;display:grid;place-items:center;
-  border:0;border-radius:5px;background:transparent;color:var(--ink-2);
-  transition:background .14s,color .14s;
+.tb-icon,
+.tb-switch,
+.tb-menu {
+  --app-region: no-drag;
 }
-.tb-icon:hover{background:var(--chrome-hover);color:var(--accent);}
-.tb-icon svg{width:16px;height:16px;}
-html.sidebar-collapsed .tb-icon{background:var(--accent-soft);color:var(--accent);}
 
-/* 应用图标：实心主色方块，与旁边的线框侧栏开关形成区分 */
-.tb-app{
-  width:18px;height:18px;flex:none;border-radius:4px;
-  background:var(--accent);color:#fff;
-  display:grid;place-items:center;
-  font-size:11px;font-weight:700;line-height:1;
+.tb-icon {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink-2);
+  transition:
+    background 0.14s,
+    color 0.14s;
+}
+.tb-icon:hover {
+  background: var(--chrome-hover);
+  color: var(--accent);
+}
+.tb-icon svg {
+  width: 16px;
+  height: 16px;
+}
+html.sidebar-collapsed .tb-icon {
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 /* 模块切换器：顶栏的真实交互入口，与左侧导航共用同一份 groups 数据 */
-.tb-switcher{position:relative;flex:none;}
-.tb-switch{
-  height:26px;display:flex;align-items:center;gap:6px;padding:0 8px;
-  border:1px solid transparent;border-radius:5px;background:transparent;
-  color:var(--ink);font-size:12px;font-weight:600;white-space:nowrap;
-  transition:background .14s,border-color .14s;
+.tb-switcher {
+  position: relative;
+  flex: none;
 }
-.tb-switch:hover,.tb-switch[aria-expanded="true"]{background:var(--chrome-hover);border-color:var(--line-strong);}
-.tb-switch .caret{width:10px;height:10px;color:var(--ink-3);}
-.tb-menu{
-  position:absolute;top:calc(100% + 7px);left:0;min-width:200px;padding:5px;
-  background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;
-  box-shadow:0 10px 30px rgba(16,24,40,.14);z-index:50;
+.tb-switch {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background 0.14s,
+    border-color 0.14s;
 }
-.tb-menu[hidden]{display:none;}
-.tb-menu button{
-  display:flex;align-items:center;gap:9px;width:100%;padding:7px 9px;
-  border:0;border-radius:5px;background:transparent;color:var(--ink-2);
-  font-size:12px;text-align:left;
+.tb-switch:hover,
+.tb-switch[aria-expanded='true'] {
+  background: var(--chrome-hover);
+  border-color: var(--line-strong);
 }
-.tb-menu button:hover{background:var(--accent-soft);color:var(--accent);}
-.tb-menu button.active{background:var(--accent-soft);color:var(--accent);font-weight:600;}
-.tb-menu .menu-num{font-size:10px;color:var(--ink-3);font-variant-numeric:tabular-nums;min-width:18px;}
+.tb-switch .caret {
+  width: 10px;
+  height: 10px;
+  color: var(--ink-3);
+}
+.tb-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  min-width: 200px;
+  padding: 5px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.14);
+  z-index: 50;
+}
+.tb-menu[hidden] {
+  display: none;
+}
+.tb-menu button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 12px;
+  text-align: left;
+}
+.tb-menu button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.tb-menu button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.tb-menu .menu-num {
+  font-size: 10px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  min-width: 18px;
+}
 
-.tb-sep{width:1px;height:16px;background:var(--line-strong);flex:none;}
-.tb-context{font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.tb-context-dot{padding:0 4px;}
-.desktop-only{display:none;}
-html.is-desktop .desktop-only{display:block;}
-
-/* 保存状态 */
-.save-state{
-  display:flex;align-items:center;gap:6px;height:24px;padding:0 9px;
-  border:1px solid var(--line);border-radius:999px;background:var(--surface);
-  font-size:11px;color:var(--ink-2);white-space:nowrap;
+.tb-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--line-strong);
+  flex: none;
 }
-.state-dot{width:6px;height:6px;border-radius:50%;background:#4E9A72;flex:none;}
-.save-state.busy .state-dot{background:#D2A24C;}
-.save-state.error .state-dot{background:var(--danger);}
-
-/* 动作按钮：尺寸明显小于内容区，形成「系统层 < 面板层 < 内容层」的层级 */
-.btn{
-  height:26px;padding:0 10px;border:1px solid var(--line-strong);border-radius:5px;
-  background:var(--surface);color:var(--ink-2);font-size:11.5px;white-space:nowrap;
-  transition:background .14s,border-color .14s,color .14s,transform .14s;
+.tb-context {
+  font-size: 11px;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
-.btn:active{transform:translateY(1px);}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
-.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:#fff;}
-.tb-actions{display:flex;align-items:center;gap:6px;}
-
-/* 自绘窗口控件（仅桌面模式） */
-.window-controls{display:none;align-items:center;gap:0;}
-html.is-desktop .window-controls{display:flex;}
-.win-btn{
-  width:36px;height:28px;display:grid;place-items:center;
-  border:0;border-radius:4px;background:transparent;color:var(--ink-2);
-  transition:background .14s,color .14s;
+.tb-context-dot {
+  padding: 0 4px;
 }
-.win-btn:hover{background:var(--chrome-hover);color:var(--ink);}
-.win-btn.close:hover{background:#C42B1C;color:#fff;}
-.win-btn svg{width:12px;height:12px;}
 
 /* 窗口失活时压低系统层对比度，贴近原生窗口观感 */
 html[data-mygo-window-inactive] .tb-context,
-html[data-mygo-window-inactive] .tb-switch,
-html[data-mygo-window-inactive] .save-state{opacity:.62;}
-
-@media (max-width:1000px){
-  .tb-context{display:none;}
+html[data-mygo-window-inactive] .tb-switch {
+  opacity: 0.62;
 }
-@media (max-width:920px){
-  .titlebar{position:sticky;top:0;}
-  .save-state{display:none;}
+
+@media (max-width: 1000px) {
+  .tb-context {
+    display: none;
+  }
 }

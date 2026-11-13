@@ -1,0 +1,309 @@
+{
+  "groups": [
+    {
+      "id": "personal",
+      "title": "个人信息",
+      "en": "Profile",
+      "description": "姓名与三行信息按整页中心居中，证件照固定在内容区右上角。"
+    },
+    {
+      "id": "advantage",
+      "title": "个人优势",
+      "en": "Self-Assessment",
+      "description": "首行为不加粗的一句话简述，其余条目为「加粗要点 + 描述」。"
+    },
+    {
+      "id": "work",
+      "title": "工作经历",
+      "en": "Work Experience",
+      "description": "四列网格对齐：起止时间 / 公司 / 部门 / 职位。"
+    },
+    {
+      "id": "project",
+      "title": "项目经验",
+      "en": "Project Experience",
+      "description": "第 1~4 条落在第 1 页，第 5~6 条续在第 2 页，标题不重复。"
+    },
+    {
+      "id": "education",
+      "title": "教育背景",
+      "en": "Education",
+      "description": "三列网格对齐：起止时间 / 学校 / 专业学位。"
+    },
+    {
+      "id": "certificate",
+      "title": "资格证书",
+      "en": "Professional Skills",
+      "description": "每行一条，生成时自动渲染为独立行。"
+    }
+  ],
+  "fields": {
+    "name": {
+      "group": "personal",
+      "label": "姓名",
+      "type": "text"
+    },
+    "jobTarget": {
+      "group": "personal",
+      "label": "求职意向",
+      "type": "text"
+    },
+    "birth": {
+      "group": "personal",
+      "label": "出生年月",
+      "type": "text"
+    },
+    "gender": {
+      "group": "personal",
+      "label": "性别",
+      "type": "text"
+    },
+    "nativePlace": {
+      "group": "personal",
+      "label": "籍贯",
+      "type": "text"
+    },
+    "phone": {
+      "group": "personal",
+      "label": "联系电话",
+      "type": "text"
+    },
+    "email": {
+      "group": "personal",
+      "label": "电子邮箱",
+      "type": "text"
+    },
+    "photo": {
+      "group": "personal",
+      "label": "证件照",
+      "type": "text",
+      "hint": "可填图片路径",
+      "placeholder": "【证件照】 或 ![证件照](./photo.jpg)"
+    },
+    "brief": {
+      "group": "advantage",
+      "label": "一句话简述（不加粗）",
+      "type": "textarea"
+    },
+    "adv1Lead": {
+      "group": "advantage",
+      "label": "第 1 条 · 要点（加粗）",
+      "type": "text"
+    },
+    "adv1Text": {
+      "group": "advantage",
+      "label": "第 1 条 · 描述",
+      "type": "textarea"
+    },
+    "adv2Lead": {
+      "group": "advantage",
+      "label": "第 2 条 · 要点（加粗）",
+      "type": "text"
+    },
+    "adv2Text": {
+      "group": "advantage",
+      "label": "第 2 条 · 描述",
+      "type": "textarea"
+    },
+    "adv3Lead": {
+      "group": "advantage",
+      "label": "第 3 条 · 要点（加粗）",
+      "type": "text"
+    },
+    "adv3Text": {
+      "group": "advantage",
+      "label": "第 3 条 · 描述",
+      "type": "textarea"
+    },
+    "adv4Lead": {
+      "group": "advantage",
+      "label": "第 4 条 · 要点（加粗）",
+      "type": "text"
+    },
+    "adv4Text": {
+      "group": "advantage",
+      "label": "第 4 条 · 描述",
+      "type": "textarea"
+    },
+    "adv5Lead": {
+      "group": "advantage",
+      "label": "第 5 条 · 要点（加粗）",
+      "type": "text"
+    },
+    "adv5Text": {
+      "group": "advantage",
+      "label": "第 5 条 · 描述",
+      "type": "textarea"
+    },
+    "adv6Lead": {
+      "group": "advantage",
+      "label": "第 6 条 · 要点（加粗）",
+      "type": "text"
+    },
+    "adv6Text": {
+      "group": "advantage",
+      "label": "第 6 条 · 描述",
+      "type": "textarea"
+    },
+    "work1Period": {
+      "group": "work",
+      "label": "第 1 段 · 起止时间",
+      "type": "text"
+    },
+    "work1Company": {
+      "group": "work",
+      "label": "第 1 段 · 公司名称",
+      "type": "text"
+    },
+    "work1Dept": {
+      "group": "work",
+      "label": "第 1 段 · 部门",
+      "type": "text"
+    },
+    "work1Role": {
+      "group": "work",
+      "label": "第 1 段 · 职位名称",
+      "type": "text"
+    },
+    "work1Desc": {
+      "group": "work",
+      "label": "第 1 段 · 工作描述",
+      "type": "textarea"
+    },
+    "work2Period": {
+      "group": "work",
+      "label": "第 2 段 · 起止时间",
+      "type": "text"
+    },
+    "work2Company": {
+      "group": "work",
+      "label": "第 2 段 · 公司名称",
+      "type": "text"
+    },
+    "work2Dept": {
+      "group": "work",
+      "label": "第 2 段 · 部门",
+      "type": "text"
+    },
+    "work2Role": {
+      "group": "work",
+      "label": "第 2 段 · 职位名称",
+      "type": "text"
+    },
+    "work2Desc": {
+      "group": "work",
+      "label": "第 2 段 · 工作描述",
+      "type": "textarea"
+    },
+    "proj1Name": {
+      "group": "project",
+      "label": "项目 1 · 名称",
+      "type": "text"
+    },
+    "proj1Desc": {
+      "group": "project",
+      "label": "项目 1 · 描述",
+      "type": "textarea"
+    },
+    "proj2Name": {
+      "group": "project",
+      "label": "项目 2 · 名称",
+      "type": "text"
+    },
+    "proj2Desc": {
+      "group": "project",
+      "label": "项目 2 · 描述",
+      "type": "textarea"
+    },
+    "proj3Name": {
+      "group": "project",
+      "label": "项目 3 · 名称",
+      "type": "text"
+    },
+    "proj3Desc": {
+      "group": "project",
+      "label": "项目 3 · 描述",
+      "type": "textarea"
+    },
+    "proj4Name": {
+      "group": "project",
+      "label": "项目 4 · 名称",
+      "type": "text"
+    },
+    "proj4Desc": {
+      "group": "project",
+      "label": "项目 4 · 描述",
+      "type": "textarea"
+    },
+    "proj5Name": {
+      "group": "project",
+      "label": "项目 5 · 名称",
+      "type": "text"
+    },
+    "proj5Desc": {
+      "group": "project",
+      "label": "项目 5 · 描述",
+      "type": "textarea"
+    },
+    "proj6Name": {
+      "group": "project",
+      "label": "项目 6 · 名称",
+      "type": "text"
+    },
+    "proj6Desc": {
+      "group": "project",
+      "label": "项目 6 · 描述",
+      "type": "lines"
+    },
+    "edu1Period": {
+      "group": "education",
+      "label": "教育 1 · 起止时间",
+      "type": "text"
+    },
+    "edu1School": {
+      "group": "education",
+      "label": "教育 1 · 学校名称",
+      "type": "text"
+    },
+    "edu1Major": {
+      "group": "education",
+      "label": "教育 1 · 专业 / 学位",
+      "type": "text"
+    },
+    "edu1Honor": {
+      "group": "education",
+      "label": "教育 1 · 主要荣誉",
+      "type": "textarea"
+    },
+    "edu1Achievement": {
+      "group": "education",
+      "label": "教育 1 · 学术成果",
+      "type": "textarea"
+    },
+    "edu2Period": {
+      "group": "education",
+      "label": "教育 2 · 起止时间",
+      "type": "text"
+    },
+    "edu2School": {
+      "group": "education",
+      "label": "教育 2 · 学校名称",
+      "type": "text"
+    },
+    "edu2Major": {
+      "group": "education",
+      "label": "教育 2 · 专业 / 学位",
+      "type": "text"
+    },
+    "edu2Honor": {
+      "group": "education",
+      "label": "教育 2 · 主要荣誉",
+      "type": "textarea"
+    },
+    "certLines": {
+      "group": "certificate",
+      "label": "证书 / 技能（每行一条）",
+      "type": "lines"
+    }
+  }
+}

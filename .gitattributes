@@ -1,11 +1,3 @@
-# =============================================================
-# 简历编辑器 · Git 属性（换行符 / 二进制资源）
-# 原则：仓库内与工作副本统一使用 LF，不受各平台 core.autocrlf 影响。
-#       本机全局 core.autocrlf=true，本文件的 eol=lf 优先级更高，
-#       可阻止 Git 在下次检出时把文本文件改写成 CRLF。
-# 说明：通配符同样覆盖中文命名的模板原稿（如 docs/简历模板.html）。
-# =============================================================
-
 # --- 默认规则：Git 自动判别文本 / 二进制，文本统一 LF ---
 * text=auto eol=lf
 
@@ -15,6 +7,7 @@
 *.sum           text eol=lf
 *.js            text eol=lf
 *.mjs           text eol=lf
+*.sh            text eol=lf
 *.ts            text eol=lf
 *.css           text eol=lf
 *.html          text eol=lf
@@ -45,6 +38,5 @@
 *.zip   binary
 
 # --- 唯一例外：cmd.exe 批处理对 LF 解析不可靠，须保留 CRLF ---
-# 当前仓库无此类文件，仅为将来新增脚本预留；PowerShell (.ps1) 用 LF 即可。
 *.bat   text eol=crlf
 *.cmd   text eol=crlf

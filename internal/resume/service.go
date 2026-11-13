@@ -1,77 +1,149 @@
 package resume
 
 import (
+	"context"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
+
+	"resume-editor/internal/apperr"
+	"resume-editor/internal/logging"
 )
 
-// Resume 是编辑器页面可以调用的 Go 服务：内容读写、模板填充、成品导出。
-// 类型名必须为 Resume，mygo.Bind 据此生成前端的 Resume.* 调用。
+// Resume is the desktop service. Only intentional frontend APIs are exported.
 type Resume struct {
-	mu     sync.Mutex
-	assets Assets
+	mu        sync.Mutex
+	resources Resources
+	paths     StoragePaths
+	template  *Template
+	renderPDF PDFRenderer
+	logger    *slog.Logger
 }
 
-// New 构造服务；资源与路径由 app 层注入。
-func New(a Assets) *Resume { return &Resume{assets: a} }
+// New compiles shared definitions and assembles the desktop service.
+func New(resources Resources, paths StoragePaths, renderPDF PDFRenderer, logger *slog.Logger) (*Resume, error) {
+	template, err := CompileTemplate(resources.TemplateHTML)
+	if err != nil {
+		return nil, err
+	}
+	if logger == nil {
+		logger = slog.Default()
+	}
+	return &Resume{
+		resources: resources, paths: paths, template: template, renderPDF: renderPDF,
+		logger: logger.With("component", "resume"),
+	}, nil
+}
 
-// dataDir 返回用户内容所在目录，供状态栏显示。
-// 不导出，避免 mygo.Bind 把内部辅助方法暴露成前端 API。
-func (r *Resume) dataDir() string { return filepath.Dir(r.assets.ContentFile) }
+func (r *Resume) failure(operation string, code apperr.Code, cause error) error {
+	err := apperr.Wrap(code, cause)
+	logging.Failure(r.logger, operation, err)
+	return err
+}
 
-// Load 读取用户内容；首次运行时回退到内嵌的默认文档。
+// Load reads saved content, falling back to the bundled document on first use.
 func (r *Resume) Load() (Content, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if b, err := os.ReadFile(r.assets.ContentFile); err == nil {
-		return ParseContent(string(b))
+	source := "user"
+	data, err := os.ReadFile(r.paths.ContentFile)
+	if os.IsNotExist(err) {
+		data, err = []byte(r.resources.DocumentMD), nil
+		source = "default"
 	}
-	return ParseContent(r.assets.DocumentMD)
-}
-
-// Fill 返回填充后的完整 HTML（预览与导出共用同一条渲染链路）。
-func (r *Resume) Fill(c Content) (string, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if err := Validate(c, r.assets.TemplateHTML); err != nil {
-		return "", err
-	}
-	return FillTemplate(r.assets.TemplateHTML, c.Fields)
-}
-
-// Save 把当前编辑内容写回 Markdown 文档。
-func (r *Resume) Save(c Content) (string, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if err := Validate(c, r.assets.TemplateHTML); err != nil {
-		return "", err
-	}
-	md, err := WriteMarkdown(c, r.assets.Schema)
 	if err != nil {
-		return "", err
+		return Content{}, r.failure("load", apperr.ContentLoad, err)
 	}
-	if err := os.MkdirAll(filepath.Dir(r.assets.ContentFile), 0o755); err != nil {
-		return "", err
+	content, err := ParseContent(string(data))
+	if err != nil {
+		return Content{}, r.failure("load", apperr.ContentLoad, err)
 	}
-	if err := os.WriteFile(r.assets.ContentFile, []byte(md), 0o644); err != nil {
-		return "", err
-	}
-	return r.assets.ContentFile, nil
+	r.logger.Info("content_loaded", "source", source)
+	return content, nil
 }
 
-// Export 生成 A4 双页 PDF，返回写入的绝对路径。
-func (r *Resume) Export(c Content) (string, error) {
+// Fill returns the same HTML used by desktop PDF export.
+func (r *Resume) Fill(content Content) (string, error) {
+	if err := r.template.Validate(content); err != nil {
+		return "", r.failure("preview", apperr.PreviewFailed, err)
+	}
+	return r.template.Fill(content.Fields), nil
+}
+
+// Save serializes content using schema order and writes the user's document.
+func (r *Resume) Save(content Content) (string, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	return ExportPDF(r.assets, c)
+	if err := r.template.Validate(content); err != nil {
+		return "", r.failure("save", apperr.ContentSave, err)
+	}
+	markdown, err := WriteMarkdown(content, r.resources.Schema)
+	if err != nil {
+		return "", r.failure("save", apperr.ContentSave, err)
+	}
+	if err := os.MkdirAll(filepath.Dir(r.paths.ContentFile), 0o755); err != nil {
+		return "", r.failure("save", apperr.ContentSave, err)
+	}
+	if err := os.WriteFile(r.paths.ContentFile, []byte(markdown), 0o644); err != nil {
+		return "", r.failure("save", apperr.ContentSave, err)
+	}
+	r.logger.Info("content_saved")
+	return r.paths.ContentFile, nil
 }
 
-// Info 返回运行环境信息，供编辑器状态栏显示。
+// Export renders the document and delegates PDF creation to the desktop adapter.
+func (r *Resume) Export(content Content) (string, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if err := r.template.Validate(content); err != nil {
+		return "", r.failure("export", apperr.ExportFailed, err)
+	}
+	started := time.Now()
+	r.logger.Info("export_started")
+	result, err := exportPDF(r.paths.OutputDir, r.template.Fill(content.Fields), r.renderPDF)
+	if err != nil {
+		return "", r.failure("export", apperr.ExportFailed, err)
+	}
+	r.logger.Info("export_completed", "duration_ms", time.Since(started).Milliseconds())
+	return result, nil
+}
+
+// Info returns application paths and identity for the desktop editor.
 func (r *Resume) Info() (map[string]string, error) {
 	return map[string]string{
-		"dataDir": r.dataDir(),
+		"dataDir": filepath.Dir(r.paths.ContentFile),
+		"logDir":  filepath.Join(filepath.Dir(r.paths.ContentFile), "logs"),
 		"mode":    "mygo",
-		"version": "0.1.0",
+		"version": r.resources.Metadata.Version,
 	}, nil
+}
+
+// ClientLog deliberately has no free-form context or resume-content fields.
+type ClientLog struct {
+	Level string      `json:"level"`
+	Event string      `json:"event"`
+	Code  apperr.Code `json:"code,omitempty"`
+}
+
+// Log records frontend operation names and centrally defined error codes.
+func (r *Resume) Log(entry ClientLog) {
+	level := slog.LevelInfo
+	switch entry.Level {
+	case "debug":
+		level = slog.LevelDebug
+	case "warn":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	}
+	attrs := []any{"source", "frontend"}
+	if entry.Code != "" {
+		if !apperr.Known(entry.Code) {
+			entry.Code = apperr.Unexpected
+		}
+		attrs = append(attrs, "code", entry.Code)
+	}
+	r.logger.Log(context.Background(), level, entry.Event, attrs...)
 }
