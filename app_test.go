@@ -86,6 +86,29 @@ func TestCustomTitleBar(t *testing.T) {
 	}
 }
 
+func TestInitialWindowSize(t *testing.T) {
+	// sizeForWorkArea：工作区 → 窗口尺寸。宽度取 86%、高度取 90%，
+	// 夹在 1080×680（三栏下限）与 1320×880（大屏上限）之间。
+	cases := []struct {
+		name                  string
+		areaWidth, areaHeight int
+		wantWidth, wantHeight int
+	}{
+		{"2240×1400 缩放 150%，工作区 1493×885", 1493, 885, 1283, 796},
+		{"1920×1080 缩放 100%，工作区 1920×1040", 1920, 1040, 1320, 880},
+		{"1920×1080 缩放 125%，工作区 1536×824", 1536, 824, 1320, 741},
+		{"1366×768 缩放 100%，工作区 1366×728", 1366, 728, 1174, 680},
+		{"1024×768 极小工作区，不得超出屏幕", 1024, 728, 1024, 680},
+	}
+	for _, c := range cases {
+		width, height := sizeForWorkArea(c.areaWidth, c.areaHeight)
+		if width != c.wantWidth || height != c.wantHeight {
+			t.Errorf("%s：期望 %d×%d，实际 %d×%d",
+				c.name, c.wantWidth, c.wantHeight, width, height)
+		}
+	}
+}
+
 func TestNewResumeServiceWiring(t *testing.T) {
 	svc, err := newResumeService()
 	if err != nil {

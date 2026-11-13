@@ -15,13 +15,15 @@ func main() {
 	mygo.Bind(svc)
 
 	mygo.App.WhenReady(func() {
+		// 启动尺寸按主显示器工作区推算，见 windowsize.go。
+		width, height := initialWindowSize()
 		mygo.NewWindow(customTitleBar(mygo.WindowOptions{
 			Title:     "简历编辑器",
 			URL:       "/",
-			Width:     1440,
-			Height:    920,
-			MinWidth:  1080,
-			MinHeight: 680,
+			Width:     width,
+			Height:    height,
+			MinWidth:  minInitialWidth,
+			MinHeight: minInitialHeight,
 			StateKey:  "main",
 		}))
 	})

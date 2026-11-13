@@ -155,7 +155,7 @@ docs/简历内容.md   ──┼─→ build-web.mjs ─→ assets/ ──→ go
 | 改分栏宽度 / 折叠 | `frontend/components/panes.js` + `frontend/styles/workspace.css`、`base.css` 的宽度变量 | `npm run web` |
 | 改表单、预览、保存逻辑 | `frontend/app.js` | `npm run web && npm run test` |
 | 加 Go 服务方法 | `internal/resume/service.go`（及 `document.go` / `render.go`） | `go test ./... && go tool mygo build -skip-installer` |
-| 改窗口尺寸 / 标题 / 顶栏高度 | `main.go`、`titlebar.go`，并同步 `base.css` 的 `--titlebar-h`（当前 40px） | `npm run build` |
+| 改启动窗口尺寸 / 标题 / 顶栏高度 | `windowsize.go`（尺寸比例与上下限）、`titlebar.go`，并同步 `base.css` 的 `--titlebar-h`（当前 40px） | `npm run build` |
 | 改应用名 / 版本 / 输出目录 | `mygo.json` | `npm run build` |
 | 改字段规则、填写规范、版式说明 | `docs/内容文档规范.md`（**不要**写回 `简历内容.md`，它是纯数据文件） | 无 |
 
