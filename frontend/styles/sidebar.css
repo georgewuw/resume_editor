@@ -1,491 +1,327 @@
-/* sidebar.css — 最左栏
-   支持展开态与「图标轨」收起态，收起后仍保留模块编号可点击，功能不丢失。 */
-
+/* Compact navigation, document switching and persistent save state. */
 .sidebar {
   flex: none;
   width: var(--sidebar-w);
   min-width: 0;
-  background: var(--surface-alt);
-  padding: 16px 12px 14px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  padding: 12px 10px 0;
+  background: #f4f6f8;
   overflow: hidden;
-  /* 不做宽度过渡：折叠/拖拽即时生效，避免动画期间布局与测量不一致 */
 }
 .side-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 0 4px 10px;
-}
-.side-label {
-  margin: 0;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.3px;
-  color: var(--ink-3);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.side-collapse {
-  width: 22px;
-  height: 22px;
   flex: none;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--ink-3);
-  --app-region: no-drag;
-  transition:
-    background 0.14s,
-    color 0.14s;
+  padding-bottom: 12px;
 }
-.side-collapse:hover {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-.side-collapse svg {
-  width: 13px;
-  height: 13px;
-  transition: transform 0.18s;
-}
-
 .side-navigation {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
-.side-document {
-  margin: 0 4px 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
+.sidebar svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.side-document-label {
-  display: block;
-  font-size: 10px;
+.side-document {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  margin: 0 0 12px;
+  padding: 0 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  background: transparent;
   color: var(--ink-2);
-  margin-bottom: 3px;
+  text-align: left;
+  transition:
+    background 0.16s,
+    color 0.16s;
+}
+.side-document:hover {
+  background: var(--chrome-hover);
+  color: var(--ink);
+}
+.side-document:active {
+  transform: translateY(1px);
 }
 .side-document-name {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 12px;
+  font-weight: 550;
+}
+.sidebar .document-link-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--ink-3);
 }
 .nav-list,
 .file-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   flex: 1;
   min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   overflow-y: auto;
 }
-.nav-item {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 10px;
-  min-height: 59px;
-  padding: 10px;
-  margin-bottom: 4px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  text-align: left;
-  color: var(--ink-2);
-  transition:
-    background 0.14s,
-    color 0.14s,
-    border-color 0.14s,
-    transform 0.14s;
-}
-.nav-item:hover {
-  background: #f0f3f6;
-  color: var(--ink);
-}
-.nav-item:active {
-  transform: translateY(1px);
-}
-.nav-item.active {
-  background: #edf3f8;
-  border-color: #dce6ee;
-  color: var(--accent);
-}
-.nav-num {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 25px;
-  height: 25px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
-  font-size: 10px;
-  font-weight: 550;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-2);
-}
-.nav-item.active .nav-num {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-}
-.nav-copy {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
-  gap: 1px;
-}
-.nav-name {
-  font-size: 12.5px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.nav-detail {
-  font-size: 10px;
-  color: var(--ink-2);
-}
-.nav-count {
-  font-size: 10px;
-  color: var(--ink-2);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.nav-count.complete {
-  color: #337655;
-}
-.file-list-head {
-  display: flex;
-  justify-content: space-between;
-  margin: 2px 8px 10px;
-  font-size: 10px;
-  color: var(--ink-2);
-}
+.nav-item,
 .file-item {
   display: flex;
   align-items: center;
   width: 100%;
+  min-width: 0;
+  min-height: 36px;
   gap: 9px;
-  min-height: 63px;
-  padding: 10px;
-  margin-bottom: 5px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  text-align: left;
-  color: var(--ink-2);
+  padding: 8px;
+  margin-bottom: 3px;
+  border: 0;
+  border-radius: 5px;
   background: transparent;
+  color: var(--ink-2);
+  text-align: left;
   transition:
-    background 0.14s,
-    border-color 0.14s,
-    transform 0.14s;
+    background 0.16s,
+    color 0.16s,
+    transform 0.16s;
 }
+.nav-item:hover,
 .file-item:hover {
-  background: #f0f3f6;
+  background: #e9edf2;
+  color: var(--ink);
 }
+.nav-item:active,
 .file-item:active {
   transform: translateY(1px);
 }
+.nav-item.active,
 .file-item.active {
-  border-color: #dce6ee;
-  background: #edf3f8;
-}
-.file-icon {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 29px;
-  height: 35px;
-  border: 1px solid #d8e1e9;
-  border-radius: 4px;
+  background: #e2e9f0;
   color: var(--accent);
-  background: white;
-  font:
-    600 9px/1 ui-monospace,
-    monospace;
+}
+.nav-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 550;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-count {
+  flex: none;
+  color: var(--ink-2);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.file-list-head {
+  display: flex;
+  flex: none;
+  justify-content: space-between;
+  padding: 4px 8px 10px;
+  font-size: 11px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
 }
 .file-item-copy {
   display: flex;
+  flex: 1;
   min-width: 0;
   flex-direction: column;
 }
 .file-item-title {
   font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
+  font-weight: 550;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .file-item-company {
-  font-size: 10px;
   color: var(--ink-2);
+  font-size: 10px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .new-file-button {
   display: flex;
-  justify-content: center;
+  flex: none;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  min-height: 34px;
+  min-height: 30px;
   margin-top: 12px;
-  border: 1px dashed #c9d4df;
-  border-radius: 6px;
-  color: var(--accent);
-  background: transparent;
-  font-size: 11px;
-  font-weight: 550;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 12px;
   transition:
-    border-color 0.14s,
-    background 0.14s,
-    transform 0.14s;
+    background 0.16s,
+    border-color 0.16s,
+    transform 0.16s;
 }
 .new-file-button:hover {
   background: var(--accent-soft);
-  border-color: var(--accent);
+  border-color: #b8c5d2;
+  color: var(--accent);
 }
 .new-file-button:active {
   transform: translateY(1px);
 }
-/* ---------- 左下角状态面板：存档状态 / 完成度 / 落盘位置 ---------- */
-.side-foot {
+.side-status {
+  display: flex;
   flex: none;
-  margin-top: 10px;
-  padding: 11px 12px 12px;
-  border-radius: var(--radius);
-  background: #f1f4f8;
+  align-items: center;
+  min-height: 44px;
+  margin: 12px -10px 0;
+  border-top: 1px solid var(--line-strong);
 }
-.foot-status {
+.side-settings {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: none;
+  height: 43px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 11px;
+  white-space: nowrap;
+  transition:
+    background 0.16s,
+    color 0.16s;
+}
+.side-settings::after {
+  position: absolute;
+  content: '';
+  inset: 11px 0 11px auto;
+  width: 1px;
+  background: var(--line-strong);
+}
+.side-settings:hover {
+  background: var(--chrome-hover);
+  color: var(--ink);
+}
+.side-settings:active svg {
+  transform: translateY(1px);
+}
+.side-settings:focus-visible {
+  outline-offset: -4px;
+}
+.side-status-summary {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 6px;
+  padding: 0 10px;
 }
 .save-state {
   display: flex;
   align-items: center;
-  gap: 7px;
   min-width: 0;
-  font-size: 11.5px;
-  font-weight: 550;
-  letter-spacing: -0.1px;
+  gap: 7px;
+  font-size: 11px;
   color: var(--ink-2);
   white-space: nowrap;
 }
-.save-state #saveText {
+#saveText {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .state-dot {
-  width: 6px;
-  height: 6px;
   flex: none;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #4e9a72;
-  box-shadow: 0 0 0 3px rgba(78, 154, 114, 0.14);
-  transition:
-    background 0.2s,
-    box-shadow 0.2s;
+  background: #5b816e;
+  transition: background 0.16s;
 }
 .save-state.busy .state-dot {
-  background: #d2a24c;
-  box-shadow: 0 0 0 3px rgba(210, 162, 76, 0.16);
+  background: #b48c45;
 }
 .save-state.error .state-dot {
   background: var(--danger);
-  box-shadow: 0 0 0 3px rgba(180, 71, 59, 0.14);
 }
-.foot-pct {
+.side-progress {
   flex: none;
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: -0.2px;
-  color: var(--accent);
+  font-size: 10px;
   font-variant-numeric: tabular-nums;
-}
-.progress-track {
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(36, 70, 100, 0.1);
-  overflow: hidden;
-}
-.progress-bar {
-  height: 100%;
-  width: 0;
-  background: var(--accent);
-  border-radius: 999px;
-  transition: width 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-.side-meta {
-  margin: 8px 0 0;
-  font-size: 10.5px;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-}
-.collapsed-progress {
-  display: none;
+  color: var(--ink-2);
 }
 
-/* ---------- 收起态：仅显示编号的图标轨 ---------- */
+/* The collapsed rail keeps each module and the save state accessible. */
 html.sidebar-collapsed .sidebar {
   width: var(--sidebar-rail-w);
-  padding: 14px 6px;
-}
-html.sidebar-collapsed .side-label {
-  display: none;
-}
-html.sidebar-collapsed .side-foot {
-  margin-top: 8px;
-  padding: 10px 0 0;
-  border-radius: 0;
-  background: transparent;
-  display: flex;
-  justify-content: center;
-}
-html.sidebar-collapsed .collapsed-progress {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  flex: none;
-}
-html.sidebar-collapsed .collapsed-progress svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-html.sidebar-collapsed .collapsed-progress circle {
-  fill: none;
-  stroke-width: 4;
-}
-html.sidebar-collapsed .collapsed-progress-track {
-  stroke: rgba(36, 70, 100, 0.14);
-}
-html.sidebar-collapsed .collapsed-progress-value {
-  stroke: var(--accent);
-  stroke-linecap: round;
-  stroke-dasharray: 0 100;
-  transition: stroke-dasharray 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-html.sidebar-collapsed .collapsed-progress-count {
-  position: relative;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-}
-html.sidebar-collapsed .foot-status,
-html.sidebar-collapsed .progress-track,
-html.sidebar-collapsed .side-meta {
-  display: none;
-}
-html.sidebar-collapsed .side-head {
-  justify-content: center;
-  padding: 0 0 10px;
-}
-html.sidebar-collapsed .side-collapse svg {
-  transform: rotate(180deg);
-}
-html.sidebar-collapsed .nav-name,
-html.sidebar-collapsed .nav-count {
-  display: none;
-}
-html.sidebar-collapsed .nav-item {
-  justify-content: center;
-  padding: 10px 0;
-  border-left: 0;
-}
-html.sidebar-collapsed .nav-num {
-  font-size: 11px;
-  min-width: 0;
-}
-
-html.sidebar-collapsed .side-document,
-html.sidebar-collapsed .nav-copy,
-html.sidebar-collapsed .file-item-copy,
-html.sidebar-collapsed .file-list-head,
-html.sidebar-collapsed .new-file-label {
-  display: none;
-}
-html.sidebar-collapsed .nav-item {
-  min-height: 44px;
-  border: 1px solid transparent;
-}
-html.sidebar-collapsed .nav-item.active {
-  border-color: #dce6ee;
-}
-html.sidebar-collapsed .file-item {
-  padding: 7px 0;
-  justify-content: center;
-}
-html.sidebar-collapsed .new-file-button {
-  font-size: 18px;
-}
-
-/* Workspace switching stays above navigation; save status is outside both modes. */
-.side-head {
-  padding: 0 0 15px;
-}
-.side-head .workspace-segments {
-  display: flex;
-  width: 100%;
-}
-.side-head .workspace-segments button {
-  flex: 1;
-  min-width: 0;
-  height: 30px;
-  padding: 0 6px;
-}
-.segment-short {
-  display: none;
-}
-.side-status {
-  flex: none;
-  border-top: 1px solid var(--line-strong);
-  margin-top: 16px;
-  padding-top: 15px;
-}
-.side-foot {
-  margin-top: 0;
-}
-html.sidebar-collapsed .side-head {
-  padding-bottom: 12px;
+  padding: 12px 6px 0;
 }
 html.sidebar-collapsed .workspace-segments {
   flex-direction: column;
-  gap: 3px;
-  padding: 3px;
 }
 html.sidebar-collapsed .workspace-segments button {
   flex: none;
   padding: 0 2px;
   font-size: 10px;
 }
-html.sidebar-collapsed .segment-label {
+html.sidebar-collapsed .side-document,
+html.sidebar-collapsed .nav-name,
+html.sidebar-collapsed .nav-count,
+html.sidebar-collapsed .file-item-copy,
+html.sidebar-collapsed .file-list-head,
+html.sidebar-collapsed .new-file-label,
+html.sidebar-collapsed .side-settings-label,
+html.sidebar-collapsed .side-progress {
   display: none;
 }
-html.sidebar-collapsed .segment-short {
-  display: inline;
+html.sidebar-collapsed .nav-item,
+html.sidebar-collapsed .file-item {
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px;
+}
+html.sidebar-collapsed .new-file-button {
+  font-size: 18px;
 }
 html.sidebar-collapsed .side-status {
-  padding-top: 10px;
-  margin-top: 10px;
+  justify-content: center;
+  gap: 3px;
+  margin-inline: -6px;
+  padding-inline: 6px;
+}
+html.sidebar-collapsed .side-settings {
+  width: 32px;
+  padding: 0;
+}
+html.sidebar-collapsed .side-settings::after {
+  display: none;
+}
+html.sidebar-collapsed .side-status-summary {
+  flex: none;
+  padding: 0;
+}
+html.sidebar-collapsed #saveText {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

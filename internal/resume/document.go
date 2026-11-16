@@ -4,6 +4,7 @@ package resume
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"resume-editor/internal/apperr"
@@ -12,6 +13,30 @@ import (
 // Content is the document passed between the editor and Go.
 type Content struct {
 	Fields map[string][]string `json:"fields"`
+}
+
+var projectField = regexp.MustCompile(`^(proj[1-9][0-9]*)(Name|Desc)$`)
+var workField = regexp.MustCompile(`^(work[1-5])(Period|Company|Dept|Role|Desc)$`)
+var advantageField = regexp.MustCompile(`^(adv[1-6])(Lead|Text)$`)
+var educationField = regexp.MustCompile(`^(edu[1-3])(Period|School|Major|Honor|Achievement)$`)
+
+// Optional field groups are omitted as a whole when their repeated item is deleted.
+func optionalFieldGroup(key string) []string {
+	if match := projectField.FindStringSubmatch(key); match != nil {
+		return []string{match[1] + "Name", match[1] + "Desc"}
+	}
+	if match := workField.FindStringSubmatch(key); match != nil {
+		prefix := match[1]
+		return []string{prefix + "Period", prefix + "Company", prefix + "Dept", prefix + "Role", prefix + "Desc"}
+	}
+	if match := advantageField.FindStringSubmatch(key); match != nil {
+		return []string{match[1] + "Lead", match[1] + "Text"}
+	}
+	if match := educationField.FindStringSubmatch(key); match != nil {
+		prefix := match[1]
+		return []string{prefix + "Period", prefix + "School", prefix + "Major", prefix + "Honor", prefix + "Achievement"}
+	}
+	return nil
 }
 
 // ParseContent 按内容文档的字段锚点规则解析：
@@ -77,6 +102,9 @@ func WriteMarkdown(c Content, schema []FieldMeta) (string, error) {
 	var b strings.Builder
 	last := ""
 	for _, f := range schema {
+		if _, exists := c.Fields[f.Key]; !exists && len(optionalFieldGroup(f.Key)) > 0 {
+			continue
+		}
 		if f.Group != last {
 			last = f.Group
 			idx := groupNumbers[f.Group]

@@ -48,6 +48,125 @@ func TestValidateDetectsMissingAndExtra(t *testing.T) {
 	}
 }
 
+func TestProjectFieldsAreOptionalTogether(t *testing.T) {
+	template := `<span data-f="name"></span><span data-f="proj1Name"></span><span data-f="proj1Desc"></span>`
+	content := Content{Fields: map[string][]string{"name": {"姓名"}}}
+	if err := Validate(content, template); err != nil {
+		t.Fatal(err)
+	}
+	content.Fields["proj1Name"] = []string{"项目"}
+	if err := Validate(content, template); err == nil {
+		t.Error("half of a project pair was accepted")
+	}
+}
+
+func TestWorkExperienceFieldsAreOptionalAsAGroup(t *testing.T) {
+	template := `<!-- optional:work1Period --><section><span data-f="work1Period"></span><span data-f="work1Company"></span><span data-f="work1Dept"></span><span data-f="work1Role"></span><span data-f="work1Desc"></span></section><!-- /optional -->`
+	content := Content{Fields: map[string][]string{"name": {"姓名"}}}
+	if err := Validate(content, `<span data-f="name"></span>`+template); err != nil {
+		t.Fatalf("an omitted work group should be valid: %v", err)
+	}
+	content.Fields["work1Period"] = []string{"2024-2025"}
+	if err := Validate(content, `<span data-f="name"></span>`+template); err == nil {
+		t.Fatal("a partial work group was accepted")
+	}
+	content.Fields = map[string][]string{"name": {"姓名"}, "work6Period": {"2024-2025"}}
+	if err := Validate(content, `<span data-f="name"></span>`+template); err == nil {
+		t.Fatal("a sixth work experience was accepted")
+	}
+}
+
+func TestFillOmitsDeletedOptionalSections(t *testing.T) {
+	template := `before<!-- optional:work1Period --><section><span data-f="work1Period"></span></section><!-- /optional -->after`
+	out, err := FillTemplate(template, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if out != "beforeafter" {
+		t.Fatalf("deleted section was rendered: %q", out)
+	}
+}
+
+func TestAdvantageItemsKeepBriefRequired(t *testing.T) {
+	template := `<span data-f="brief"></span><span data-f="adv1Lead"></span><span data-f="adv1Text"></span>`
+	content := Content{Fields: map[string][]string{"brief": {"个人简介"}}}
+	if err := Validate(content, template); err != nil {
+		t.Fatalf("brief without advantage items should be valid: %v", err)
+	}
+	content.Fields["adv1Lead"] = []string{"业务分析"}
+	if err := Validate(content, template); err == nil {
+		t.Fatal("partial advantage item was accepted")
+	}
+	content.Fields["adv1Text"] = []string{"推动业务流程改进"}
+	if err := Validate(content, template); err != nil {
+		t.Fatal(err)
+	}
+	delete(content.Fields, "brief")
+	if err := Validate(content, template); err == nil {
+		t.Fatal("advantage items allowed a missing brief")
+	}
+}
+
+func TestAdvantageLeadCanBeOmitted(t *testing.T) {
+	template := `<!-- optional:adv1Text --><p><!-- optional:adv1Lead --><strong><span data-f="adv1Lead"></span></strong><!-- /optional --><span data-f="adv1Text"></span></p><!-- /optional -->`
+	if err := Validate(Content{Fields: map[string][]string{"adv1Text": {"具体描述"}}}, template); err != nil {
+		t.Fatalf("an advantage description without a lead should be valid: %v", err)
+	}
+
+	for _, lead := range [][]string{nil, {""}, {"  "}, {"【待填写】"}, {"【优势要点】"}} {
+		fields := map[string][]string{"adv1Text": {"具体描述"}}
+		if lead != nil {
+			fields["adv1Lead"] = lead
+		}
+		out, err := FillTemplate(template, fields)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(out, `data-f="adv1Lead"`) || !strings.Contains(out, `data-f="adv1Text"`) || !strings.Contains(out, "具体描述") {
+			t.Errorf("an empty or placeholder lead should be hidden while keeping the description: %q", out)
+		}
+	}
+
+	out, err := FillTemplate(template, map[string][]string{"adv1Lead": {"业务分析"}, "adv1Text": {"具体描述"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out, `data-f="adv1Lead"`) || !strings.Contains(out, "业务分析") {
+		t.Errorf("a filled advantage lead should remain visible: %q", out)
+	}
+}
+
+func TestEducationAcceptsLegacyFieldsButRejectsPartialEntries(t *testing.T) {
+	template := `<span data-f="edu2Period"></span><span data-f="edu2School"></span><span data-f="edu2Major"></span><span data-f="edu2Honor"></span><span data-f="edu2Achievement"></span>`
+	content := Content{Fields: map[string][]string{}}
+	if err := Validate(content, template); err != nil {
+		t.Fatal(err)
+	}
+	content.Fields["edu2Achievement"] = []string{"研究成果"}
+	if err := Validate(content, template); err == nil {
+		t.Fatal("orphan academic achievement was accepted")
+	}
+	delete(content.Fields, "edu2Achievement")
+	for _, suffix := range []string{"Period", "School", "Major", "Honor"} {
+		content.Fields["edu2"+suffix] = []string{"教育背景"}
+	}
+	if err := Validate(content, template); err != nil {
+		t.Fatalf("legacy education without achievements should be valid: %v", err)
+	}
+	delete(content.Fields, "edu2School")
+	if err := Validate(content, template); err == nil {
+		t.Fatal("partial education entry was accepted")
+	}
+}
+
+func TestOptionalTemplateRegionsMustBeBalanced(t *testing.T) {
+	for _, source := range []string{"<!-- optional:name -->text", "<!-- /optional -->", "<!-- optional:name"} {
+		if _, err := CompileTemplate(source); err == nil {
+			t.Errorf("invalid optional region accepted: %s", source)
+		}
+	}
+}
+
 func TestFillTemplateEscapesAndMultiline(t *testing.T) {
 	tpl := `<p data-f="x">a</p><span data-f="photo">b</span><div data-multiline data-f="lines">c</div>`
 	out, err := FillTemplate(tpl, map[string][]string{

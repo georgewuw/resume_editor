@@ -17,6 +17,7 @@ export function createBackend(errors) {
     progress: 'Resume.Progress',
     openDocument: 'Resume.OpenDocument',
     createDocument: 'Resume.CreateDocument',
+    deleteDocument: 'Resume.DeleteDocument',
     saveDocument: 'Resume.SaveDocument',
   };
 
@@ -33,13 +34,15 @@ export function createBackend(errors) {
     load: () => invoke('load', errors.codes.CONTENT_LOAD_FAILED),
     fill: (content) => invoke('fill', errors.codes.PREVIEW_FAILED, content),
     save: (content) => invoke('save', errors.codes.CONTENT_SAVE_FAILED, content),
-    export: (content) => invoke('export', errors.codes.EXPORT_FAILED, content),
+    export: (filename, content) => invoke('export', errors.codes.EXPORT_FAILED, filename, content),
     log: (entry) => bridge.call(methods.log, entry),
     listDocuments: () => invoke('listDocuments', errors.codes.CONTENT_LOAD_FAILED),
     workspace: () => invoke('workspace', errors.codes.CONTENT_LOAD_FAILED),
     progress: (content) => invoke('progress', errors.codes.DOCUMENT_INVALID, content),
     openDocument: (filename) => invoke('openDocument', errors.codes.CONTENT_LOAD_FAILED, filename),
     createDocument: (input) => invoke('createDocument', errors.codes.CONTENT_SAVE_FAILED, input),
+    deleteDocument: (filename) =>
+      invoke('deleteDocument', errors.codes.DOCUMENT_DELETE_FAILED, filename),
     saveDocument: (filename, content, jd) =>
       invoke('saveDocument', errors.codes.CONTENT_SAVE_FAILED, filename, content, jd),
   };

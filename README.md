@@ -4,9 +4,13 @@
 
 前端使用原生 HTML、CSS、JavaScript ES 模块，只通过 mygo 调用 Go 服务。模板解析、字段校验与渲染全部由 Go 负责。
 
+个人优势、工作经历、项目经验和教育背景均按独立卡片编辑，可新增或删除，也可全部删除；最多分别支持 6 项优势、5 段工作经历、6 个项目和 3 段教育经历。优势的简述独立保留，不计入 6 项上限。删除已填写的条目需要在卡片内确认；剩余条目自动顺序排列，数量和内容一起自动保存，实时预览与 PDF 同步更新。
+
 顶栏通过「内容模块 / 文件管理」分段控件切换工作区。内容模块侧栏展示各模块的填写进度；文件管理可以新建 JD 简历、切换文件、修改对应的职位描述。新建时可复制当前简历，或使用默认模板。文件规则、内容复制、完成度计算和上次打开的文件记忆均由 Go 服务负责。
 
 通用版继续保存为 `简历内容.md`；JD 版本使用 `简历_公司_岗位.md`，未填写公司时使用「未指定公司」，重名时追加 `_02`、`_03` 等序号。文件名中的非法字符由后端替换，已有文件不会被新建操作覆盖。切换文件前会先保存待写入内容，自动保存始终绑定明确的文件名。
+
+文件页提供「删除」操作，确认窗口显示完整文件名；确认后永久删除简历内容及其 JD。删除当前文件前先完成待保存内容，随后切换到保留的简历。至少保留一份简历，前后端均校验；通用简历也可删除，删除记录防止重启后重新显示默认模板。
 
 JD 版本在 Markdown 首行保存 `:: resume-profile {"company":"公司","role":"岗位","jd":"职位描述"}`，其后仍为原有 `@@字段ID` 正文。JD 的换行通过 JSON 转义，元数据不会参与简历预览和 PDF 渲染。修改通用版的 JD 时也会写入同样的文件头；不含 JD 的原有通用文件保持原格式。
 
@@ -28,6 +32,7 @@ sudo apt install libwebkit2gtk-4.1-0 fonts-noto-cjk
 ~~~
 
 ~~~powershell
+npm ci            # 安装固定版本的 Lucide 静态图标和开发工具
 npm run web       # Go 生成资源和字段定义，Node 复制前端模块、合并样式
 npm run dev       # 构建前端并启动 mygo 开发窗口
 npm run check     # JS 语法检查、Go 静态检查，不执行测试
@@ -37,7 +42,7 @@ npm run build:macos   # 构建 macOS 15+ Apple Silicon app
 npm run build:all     # 构建上述所有目标及 Windows x64
 ~~~
 
-构建命令仅使用 Go 和 Node 标准库，不需要先安装 npm 依赖。mygo 的版本通过 go.mod 固定；桌面构建会自动执行前端构建。
+构建前先执行 npm ci。mygo 的版本通过 go.mod 固定；桌面构建会自动执行前端构建。文件页的编辑和删除图标使用 Lucide，构建时仅提取所需的两个 SVG 并附带许可文本；运行时从应用本地资源加载，支持离线使用。
 
 可以从 Windows 交叉构建 Ubuntu 可执行文件、`.deb` 和 macOS `.app`。macOS 签名与 `.dmg` 制作需要在 Mac 上运行；正式分发时可配置 `macos.signingIdentity` 和公证信息，默认使用 mygo 的临时签名方式。
 
@@ -180,6 +185,8 @@ mygo.ts 是 mygo 自动生成的客户端参考文件；原生 JS 前端的调�
   active-document.json          # 上次打开的文件名；不保存简历正文或 JD
   output/成品简历.html
   output/成品简历.pdf
+  output/成品简历_公司_岗位.html
+  output/成品简历_公司_岗位.pdf
   logs/YYYY-MM-DD.jsonl
 ~~~
 
@@ -187,7 +194,7 @@ mygo.ts 是 mygo 自动生成的客户端参考文件；原生 JS 前端的调�
 
 PDF 导出通过 mygo 的 `Page.PrintToPDF` 完成，无需安装 Chrome、Edge 或 Chromium 浏览器，也无需配置浏览器路径。Windows 使用 WebView2 Runtime，Ubuntu 使用 WebKitGTK 的打印到文件能力，macOS 使用系统 WKWebView 打印能力；这些运行时同时用于应用界面。Windows 的 WebView2 内部仍使用 Chromium 内核。
 
-每次导出创建隐藏的临时 WebView，加载 `output/成品简历.html`，等待字体与图片就绪后按 A4、零页边距、保留背景色打印，并在结束时释放窗口。相对图片路径以 `output/` 为基准。PDF 和预览的排版均由所在平台的 WebView 渲染。
+每次导出创建隐藏的临时 WebView，加载 `output/` 中对应的 HTML，等待字体与图片就绪后按 A4、零页边距、保留背景色打印，并在结束时释放窗口。通用简历使用 `成品简历` 文件名，JD 简历使用与内容文件对应的 `成品简历_公司_岗位` 文件名；同一份简历重复导出会更新自己的 HTML 和 PDF。本地证件照在预览和导出时内嵌到 HTML，相对图片路径以 `output/` 为基准；保存的简历内容仍保留原始路径。PDF 和预览的排版均由所在平台的 WebView 渲染。
 
 错误码和安全中文提示只在 internal/apperr/errors.go 定义。Go 错误保留原始 cause 供本地日志排查；mygo v0.9 的错误桥接采用字符串，因此对外传输 JSON 格式的 code/message，前端统一解析。提示中的错误码可用于对应日志，原始异常不直接展示给用户。
 

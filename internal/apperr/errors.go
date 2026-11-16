@@ -20,7 +20,10 @@ const (
 	FieldsMismatch  Code = "FIELDS_MISMATCH"
 	ContentLoad     Code = "CONTENT_LOAD_FAILED"
 	ContentSave     Code = "CONTENT_SAVE_FAILED"
+	DocumentDelete  Code = "DOCUMENT_DELETE_FAILED"
+	DocumentLast    Code = "DOCUMENT_LAST_REQUIRED"
 	PreviewFailed   Code = "PREVIEW_FAILED"
+	PhotoRead       Code = "PHOTO_READ_FAILED"
 	ExportFailed    Code = "EXPORT_FAILED"
 	ExportMissing   Code = "EXPORT_OUTPUT_MISSING"
 	StorageRead     Code = "STORAGE_READ_FAILED"
@@ -41,7 +44,10 @@ var messages = map[Code]string{
 	FieldsMismatch:  "内容字段与模板不一致",
 	ContentLoad:     "读取简历内容失败",
 	ContentSave:     "保存简历内容失败",
+	DocumentDelete:  "删除简历失败",
+	DocumentLast:    "至少保留一份简历",
 	PreviewFailed:   "生成预览失败",
+	PhotoRead:       "无法读取证件照，请检查图片路径和文件格式",
 	ExportFailed:    "导出 PDF 失败",
 	ExportMissing:   "未生成有效的 PDF 文档",
 	StorageRead:     "读取界面偏好失败",

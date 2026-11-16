@@ -17,10 +17,11 @@
  *   listDocuments: () => Promise<DocumentInfo[]>,
  *   openDocument: (filename: string) => Promise<ResumeDocument>,
  *   createDocument: (input: NewDocument) => Promise<ResumeDocument>,
+ *   deleteDocument: (filename: string) => Promise<{documents: DocumentInfo[], current: ResumeDocument}>,
  *   saveDocument: (filename: string, content: ResumeContent, jd: string) => Promise<DocumentInfo>,
  *   progress: (content: ResumeContent) => Promise<ContentProgress>,
  *   load: () => Promise<ResumeContent>, fill: (content: ResumeContent) => Promise<string>,
- *   save: (content: ResumeContent) => Promise<string>, export: (content: ResumeContent) => Promise<string>,
+ *   save: (content: ResumeContent) => Promise<string>, export: (filename: string, content: ResumeContent) => Promise<string>,
  *   log: (entry: ClientLog) => Promise<void>}} ResumeBackend
  * @typedef {{metadata: {name: string, version: string}, schema: ResumeField[],
  *   groups: ResumeGroup[], initial: ResumeContent, errors: Record<string, string>}} ApplicationData

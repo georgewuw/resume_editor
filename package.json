@@ -12,12 +12,13 @@
     "build:macos": "go tool mygo build -platform darwin/arm64 -skip-installer",
     "build:all": "go tool mygo build -platform windows/amd64,linux/amd64,darwin/arm64 -skip-installer",
     "wsl": "node scripts/wsl.mjs",
-    "test": "go test ./...",
+    "test": "go test ./... && node --test scripts/tests/*.test.mjs",
     "check": "node scripts/check.mjs && go vet ./... && go tool mygo vet .",
     "format": "prettier --write \"frontend/**/*.{js,ts,css,html}\" \"scripts/**/*.mjs\" \".github/workflows/*.yml\" docs/editor.json mygo.json package.json .prettierrc.json",
     "format:check": "prettier --check \"frontend/**/*.{js,ts,css,html}\" \"scripts/**/*.mjs\" \".github/workflows/*.yml\" docs/editor.json mygo.json package.json .prettierrc.json"
   },
   "devDependencies": {
+    "lucide-static": "1.73.0",
     "prettier": "3.10.0"
   }
 }

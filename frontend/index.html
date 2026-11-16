@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>简历编辑器 · A4 双页</title>
+    <title>简历编辑器</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -33,7 +33,7 @@
               <path d="M7.5 3.5v13" stroke="currentColor" stroke-width="1.5" />
             </svg>
           </button>
-          <span class="tb-title" id="activeFilename">简历内容.md · A4 双页</span>
+          <span class="tb-title" id="activeFilename">简历内容.md</span>
         </div>
       </header>
 
@@ -48,8 +48,8 @@
                 data-mode="files"
                 aria-pressed="false"
                 aria-controls="fileNavigation fileManager"
-                ><span class="segment-label">文件管理</span
-                ><span class="segment-short">文件</span></button
+                title="简历文件"
+                ><span>文件</span></button
               >
               <button
                 type="button"
@@ -57,57 +57,58 @@
                 data-mode="content"
                 aria-pressed="true"
                 aria-controls="contentNavigation editor"
-                ><span class="segment-label">内容模块</span
-                ><span class="segment-short">内容</span></button
+                title="编辑内容"
+                ><span>内容</span></button
               >
             </div>
           </div>
           <div class="side-navigation" id="contentNavigation">
-            <div class="side-document">
-              <span class="side-document-label">正在编辑</span>
+            <button
+              type="button"
+              class="side-document"
+              id="btnDocument"
+              title="在文件中查看"
+              aria-label="在文件中查看当前简历"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M5 2.5h7l3 3v12H5zM12 2.5v4h3M8 10h4M8 13h4" />
+              </svg>
               <span class="side-document-name" id="sideDocumentName">通用简历</span>
-            </div>
+              <svg class="document-link-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 10h12M11 5l5 5-5 5" />
+              </svg>
+            </button>
             <ul class="nav-list" id="navList"></ul>
           </div>
           <div class="side-navigation" id="fileNavigation" hidden>
-            <div class="file-list-head"><span>全部文件</span><span id="fileCount">1</span></div>
+            <div class="file-list-head"><span>简历文件</span><span id="fileCount">1</span></div>
             <ul class="file-list" id="fileList"></ul>
-            <button type="button" class="new-file-button" id="btnNewDocument"
+            <button
+              type="button"
+              class="new-file-button"
+              id="btnNewDocument"
+              aria-label="新建简历"
+              title="新建简历"
               ><span aria-hidden="true">＋</span
-              ><span class="new-file-label">新建 JD 简历</span></button
+              ><span class="new-file-label">新建简历</span></button
             >
           </div>
           <div class="side-status">
-            <div class="side-foot">
-              <div
-                class="collapsed-progress"
-                id="collapsedProgress"
-                role="img"
-                aria-label="已填写 0 / 0 项"
-              >
-                <svg viewBox="0 0 40 40" aria-hidden="true">
-                  <circle class="collapsed-progress-track" cx="20" cy="20" r="17" />
-                  <circle
-                    class="collapsed-progress-value"
-                    id="collapsedProgressValue"
-                    cx="20"
-                    cy="20"
-                    r="17"
-                    pathLength="100"
-                  />
-                </svg>
-                <span class="collapsed-progress-count" id="collapsedProgressCount">0/0</span>
+            <button type="button" class="side-settings" aria-label="设置" title="设置">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path
+                  d="m8 2.5-.5 2a6 6 0 0 0-1.3.8l-2-.6-2 3.4 1.5 1.4a6 6 0 0 0 0 1.5l-1.5 1.4 2 3.4 2-.6a6 6 0 0 0 1.3.8l.5 2h4l.5-2a6 6 0 0 0 1.3-.8l2 .6 2-3.4-1.5-1.4a6 6 0 0 0 0-1.5l1.5-1.4-2-3.4-2 .6a6 6 0 0 0-1.3-.8l-.5-2Z"
+                />
+                <circle cx="10" cy="10" r="2.5" />
+              </svg>
+              <span class="side-settings-label">设置</span>
+            </button>
+            <div class="side-status-summary">
+              <div class="save-state" id="saveState" aria-live="polite">
+                <span class="state-dot" aria-hidden="true"></span
+                ><span id="saveText">正在载入…</span>
               </div>
-              <div class="foot-status">
-                <div class="save-state" id="saveState" aria-live="polite">
-                  <span class="state-dot"></span><span id="saveText">正在载入…</span>
-                </div>
-                <span class="foot-pct" id="filledPct">0%</span>
-              </div>
-              <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
-              <p class="side-meta"
-                ><span id="filledCount">0</span> / <span id="totalCount">0</span> 项已填写</p
-              >
+              <span class="side-progress" id="completionSummary">0 / 0</span>
             </div>
           </div>
         </nav>
@@ -122,11 +123,9 @@
           ><span class="splitter-grip"></span
         ></div>
 
-        <main class="editor" id="editor">
+        <main class="editor" id="editor" aria-labelledby="groupTitle">
           <div class="editor-head">
-            <p class="eyebrow" id="groupEyebrow">模块 01</p>
             <h2 id="groupTitle">个人信息</h2>
-            <p class="group-desc" id="groupDesc">按模块填写，右侧实时预览。</p>
             <label class="search">
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <circle
@@ -147,50 +146,48 @@
               <input
                 id="searchInput"
                 type="search"
-                placeholder="搜索字段或内容"
-                aria-label="搜索字段"
+                placeholder="搜索"
+                aria-label="搜索字段或内容"
               />
             </label>
           </div>
           <div class="form" id="form"></div>
         </main>
 
-        <main class="file-manager" id="fileManager" hidden>
+        <main class="file-manager" id="fileManager" aria-labelledby="documentTitle" hidden>
           <div class="files-heading">
-            <p class="eyebrow">Resume files</p>
-            <h2>简历文件</h2>
-            <p class="group-desc">每个岗位一份内容，修改自动保存到当前文件。</p>
-            <button type="button" class="btn file-create" id="btnNewDocumentMain"
-              >＋ 新建 JD 简历</button
+            <h2 id="documentTitle">通用简历</h2>
+            <button
+              type="button"
+              class="btn file-action danger-quiet"
+              id="btnDeleteDocument"
+              aria-label="删除当前简历"
+              title="删除当前简历"
+              aria-haspopup="dialog"
+              aria-controls="deleteDocumentDialog"
             >
+              <!-- lucide:trash-2 -->
+            </button>
+            <button
+              type="button"
+              class="btn file-action"
+              id="btnEditDocument"
+              aria-label="编辑内容"
+              title="编辑内容"
+            >
+              <!-- lucide:pencil -->
+            </button>
           </div>
-          <article class="document-card">
-            <div class="document-heading">
-              <span class="document-format" aria-hidden="true">MD</span>
-              <div class="document-identity"
-                ><p id="documentCompany">所有岗位</p><h3 id="documentTitle">通用简历</h3></div
-              >
-              <span class="current-file-badge">当前文件</span>
+          <div class="file-details">
+            <dl class="document-properties">
+              <div><dt>文件名</dt><dd id="documentFilename">简历内容.md</dd></div>
+              <div id="documentCompanyRow" hidden><dt>公司</dt><dd id="documentCompany"></dd></div>
+              <div><dt>更新于</dt><dd id="documentModified">尚未保存</dd></div>
+            </dl>
+            <div class="jd-editor">
+              <label for="documentJD">职位描述</label>
+              <textarea id="documentJD" rows="12" placeholder="粘贴岗位职责与任职要求"></textarea>
             </div>
-            <p class="document-filename" id="documentFilename">简历内容.md</p>
-            <div class="document-card-foot"
-              ><span id="documentModified">尚未保存</span
-              ><button type="button" class="btn" id="btnEditDocument"
-                >编辑简历 <span aria-hidden="true">↗</span></button
-              ></div
-            >
-          </article>
-          <div class="jd-editor">
-            <div class="jd-heading"
-              ><label for="documentJD">职位描述 <span>JD</span></label
-              ><span>自动保存</span></div
-            >
-            <textarea
-              id="documentJD"
-              rows="10"
-              placeholder="粘贴这个岗位的职责、要求和关键词，作为调整简历的参考。"
-            ></textarea>
-            <p class="jd-note">JD 随当前 Markdown 文件保存，仅作编辑参考。</p>
           </div>
         </main>
 
@@ -224,7 +221,7 @@
           <div class="preview-scroll" id="previewScroll">
             <div class="paper-holder" id="paperHolder">
               <div class="paper-stage" id="paperStage">
-                <iframe id="previewFrame" title="简历预览" sandbox=""></iframe>
+                <iframe id="previewFrame" title="简历预览" sandbox="allow-scripts"></iframe>
               </div>
             </div>
           </div>
@@ -238,7 +235,7 @@
       <dialog class="document-dialog" id="newDocumentDialog" aria-labelledby="newDocumentTitle">
         <form id="newDocumentForm">
           <div class="dialog-heading"
-            ><div><p class="eyebrow">New resume</p><h2 id="newDocumentTitle">新建 JD 简历</h2></div
+            ><h2 id="newDocumentTitle">新建简历</h2
             ><button
               type="button"
               class="dialog-close"
@@ -247,7 +244,6 @@
               >×</button
             ></div
           >
-          <p class="dialog-intro">为目标岗位保留一份独立简历。</p>
           <fieldset id="newDocumentFields">
             <div class="dialog-field-grid">
               <label class="dialog-field"
@@ -277,20 +273,36 @@
               >
               <label
                 ><input type="radio" name="source" value="template" /><span
-                  >从默认模板开始<small>使用初始占位内容</small></span
+                  >使用默认模板</span
                 ></label
               >
             </div>
           </fieldset>
-          <div class="filename-rule"
-            ><span>文件命名</span><code>简历_公司_岗位.md</code
-            ><small>重名时自动追加序号，公司未填时使用“未指定公司”。</small></div
-          >
           <p class="dialog-error" id="newDocumentError" role="alert"></p>
           <div class="dialog-actions"
             ><button type="button" class="btn" id="btnCancelDocument">取消</button
             ><button type="submit" class="btn" id="btnCreateDocument">创建简历</button></div
           >
+        </form>
+      </dialog>
+
+      <dialog
+        class="document-dialog delete-dialog"
+        id="deleteDocumentDialog"
+        aria-labelledby="deleteDocumentTitle"
+        aria-describedby="deleteDocumentFilename deleteDocumentDescription"
+      >
+        <form id="deleteDocumentForm">
+          <div class="dialog-heading"><h2 id="deleteDocumentTitle">删除这份简历？</h2></div>
+          <p class="delete-filename" id="deleteDocumentFilename"></p>
+          <p class="delete-description" id="deleteDocumentDescription"
+            >简历内容和职位描述将被永久删除，无法撤销。</p
+          >
+          <p class="dialog-error" id="deleteDocumentError" role="alert"></p>
+          <div class="dialog-actions">
+            <button type="button" class="btn" id="btnCancelDeleteDocument" autofocus>取消</button>
+            <button type="submit" class="btn danger" id="btnConfirmDeleteDocument">删除简历</button>
+          </div>
         </form>
       </dialog>
 

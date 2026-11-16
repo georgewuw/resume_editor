@@ -14,7 +14,7 @@ type PDFRenderer func(sourcePath string) ([]byte, error)
 
 // writePrintSource 把已渲染的 HTML 写入 PDF 打印的工作目录。
 // 它是导出 PDF 的中间产物，不再作为独立的「导出 HTML」对外提供。
-func writePrintSource(outputDir, html string) (string, error) {
+func writePrintSource(outputDir, base, html string) (string, error) {
 	outputDir, err := filepath.Abs(outputDir)
 	if err != nil {
 		return "", err
@@ -22,7 +22,7 @@ func writePrintSource(outputDir, html string) (string, error) {
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
 		return "", err
 	}
-	p := filepath.Join(outputDir, "成品简历.html")
+	p := filepath.Join(outputDir, base+".html")
 	if err := os.WriteFile(p, []byte(html), 0o644); err != nil {
 		return "", err
 	}
@@ -30,8 +30,8 @@ func writePrintSource(outputDir, html string) (string, error) {
 }
 
 // exportPDF owns output persistence; the desktop adapter owns native rendering.
-func exportPDF(outputDir, html string, render PDFRenderer) (string, error) {
-	htmlPath, err := writePrintSource(outputDir, html)
+func exportPDF(outputDir, base, html string, render PDFRenderer) (string, error) {
+	htmlPath, err := writePrintSource(outputDir, base, html)
 	if err != nil {
 		return "", err
 	}
@@ -42,7 +42,7 @@ func exportPDF(outputDir, html string, render PDFRenderer) (string, error) {
 	if !bytes.HasPrefix(data, []byte("%PDF-")) {
 		return "", apperr.Wrap(apperr.ExportMissing, nil)
 	}
-	pdf := filepath.Join(filepath.Dir(htmlPath), "成品简历.pdf")
+	pdf := filepath.Join(filepath.Dir(htmlPath), base+".pdf")
 	if err := os.WriteFile(pdf, data, 0o644); err != nil {
 		return "", err
 	}

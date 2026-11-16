@@ -66,6 +66,12 @@ async function startApp(data) {
       onProgressError: (cause) =>
         logger.warn('progress_failed', cause, errors.codes.DOCUMENT_INVALID),
       onSelect: () => {},
+      onEntriesChange(fields) {
+        content.fields = fields;
+        notices.status('编辑中…', 'busy');
+        actions.scheduleSave();
+        preview.schedule(content);
+      },
       onChange(key, lines) {
         content.fields[key] = lines;
         notices.status('编辑中…', 'busy');
@@ -107,7 +113,7 @@ async function startApp(data) {
       files.setDocuments(documents, currentDocument);
       files.setDocument(currentDocument);
       editor.refresh();
-      element('editor').scrollTop = 0;
+      element('form').scrollTop = 0;
       await preview.refresh(content);
       notices.status('已同步');
     }
@@ -129,6 +135,14 @@ async function startApp(data) {
           documents = await backend.listDocuments();
           await applyDocument(created);
           notices.toast('已创建 ' + created.document.filename);
+        });
+      },
+      onDelete(filename) {
+        return documentTask(async () => {
+          const remaining = await backend.deleteDocument(filename);
+          documents = remaining.documents;
+          await applyDocument(remaining.current);
+          notices.toast('已删除 ' + filename);
         });
       },
       onJDChange(jd) {

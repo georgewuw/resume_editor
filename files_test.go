@@ -1,11 +1,14 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"resume-editor/internal/apperr"
 	"resume-editor/internal/resume"
 )
 
@@ -81,6 +84,147 @@ func TestJDResumeVersions(t *testing.T) {
 	progress, err := svc.Progress(parsed)
 	if err != nil || progress.Total != 53 || progress.Filled != 1 || progress.Groups["personal"] != 1 {
 		t.Fatalf("progress: %+v %v", progress, err)
+	}
+}
+
+func TestDeleteResumeSelectsRemainingDocument(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("RESUME_EDITOR_HOME", home)
+	svc, err := newResumeService()
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, err := svc.CreateDocument(resume.NewDocument{Role: "产品经理"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := svc.CreateDocument(resume.NewDocument{Role: "交互设计师"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	workspace, err := svc.DeleteDocument(first.Document.Filename)
+	if err != nil || len(workspace.Documents) != 2 || workspace.Current.Document.Filename != second.Document.Filename {
+		t.Fatalf("delete inactive document: %+v %v", workspace, err)
+	}
+	if _, err := os.Stat(filepath.Join(home, first.Document.Filename)); !os.IsNotExist(err) {
+		t.Fatalf("deleted file still exists: %v", err)
+	}
+	if _, err := svc.SaveDocument(first.Document.Filename, first.Content, "stale save"); err == nil {
+		t.Fatal("late save recreated a deleted document")
+	}
+	workspace, err = svc.DeleteDocument(second.Document.Filename)
+	if err != nil || len(workspace.Documents) != 1 || workspace.Current.Document.Filename != "简历内容.md" {
+		t.Fatalf("delete active document: %+v %v", workspace, err)
+	}
+	restarted, err := newResumeService()
+	if err != nil {
+		t.Fatal(err)
+	}
+	restored, err := restarted.Workspace()
+	if err != nil || restored.Current.Document.Filename != "简历内容.md" {
+		t.Fatalf("restart after deletion: %+v %v", restored, err)
+	}
+	_, err = svc.DeleteDocument("简历内容.md")
+	var appErr *apperr.Error
+	if !errors.As(err, &appErr) || appErr.Code != apperr.DocumentLast {
+		t.Fatalf("last document was not protected: %v", err)
+	}
+}
+
+func TestDeleteGeneralResumeDoesNotReturnOnRestart(t *testing.T) {
+	for _, saved := range []bool{false, true} {
+		t.Run(fmt.Sprint("saved=", saved), func(t *testing.T) {
+			home := t.TempDir()
+			t.Setenv("RESUME_EDITOR_HOME", home)
+			svc, err := newResumeService()
+			if err != nil {
+				t.Fatal(err)
+			}
+			general, err := svc.OpenDocument("简历内容.md")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if saved {
+				general.Content.Fields["name"] = []string{"已填写的通用简历"}
+				if _, err := svc.SaveDocument(general.Document.Filename, general.Content, "通用 JD"); err != nil {
+					t.Fatal(err)
+				}
+			}
+			custom, err := svc.CreateDocument(resume.NewDocument{Role: "产品经理"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := svc.OpenDocument(general.Document.Filename); err != nil {
+				t.Fatal(err)
+			}
+			workspace, err := svc.DeleteDocument(general.Document.Filename)
+			if err != nil || len(workspace.Documents) != 1 || workspace.Current.Document.Filename != custom.Document.Filename {
+				t.Fatalf("delete general: %+v %v", workspace, err)
+			}
+			if _, err := os.Stat(filepath.Join(home, general.Document.Filename)); !os.IsNotExist(err) {
+				t.Fatalf("general resume remains on disk: %v", err)
+			}
+			if _, err := svc.SaveDocument(general.Document.Filename, general.Content, "stale save"); err == nil {
+				t.Fatal("late save recreated the deleted general resume")
+			}
+			restarted, err := newResumeService()
+			if err != nil {
+				t.Fatal(err)
+			}
+			restored, err := restarted.Workspace()
+			if err != nil || len(restored.Documents) != 1 || restored.Current.Document.Filename != custom.Document.Filename {
+				t.Fatalf("deleted general returned after restart: %+v %v", restored, err)
+			}
+			if _, err := svc.DeleteDocument(custom.Document.Filename); err == nil {
+				t.Fatal("last custom resume was deleted")
+			}
+			// External removal of every remaining file still leaves a usable workspace.
+			if err := os.Remove(filepath.Join(home, custom.Document.Filename)); err != nil {
+				t.Fatal(err)
+			}
+			fallback, err := restarted.Workspace()
+			if err != nil || len(fallback.Documents) != 1 || fallback.Current.Document.Filename != general.Document.Filename {
+				t.Fatalf("empty workspace recovery: %+v %v", fallback, err)
+			}
+		})
+	}
+}
+
+func TestDeleteFailurePreservesFilesAndSelection(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("RESUME_EDITOR_HOME", home)
+	svc, err := newResumeService()
+	if err != nil {
+		t.Fatal(err)
+	}
+	document, err := svc.CreateDocument(resume.NewDocument{Role: "产品经理"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, filename := range []string{"../简历_外部.md", `..\简历_外部.md`, "C:简历_外部.md", "其他文件.md", "简历_不存在.md"} {
+		if _, err := svc.DeleteDocument(filename); err == nil {
+			t.Errorf("accepted deletion of %q", filename)
+		}
+	}
+	path := filepath.Join(home, document.Document.Filename)
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Block the preference write that must complete before removing the current file.
+	selectionPath := filepath.Join(home, "active-document.json")
+	if err := os.Remove(selectionPath); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(selectionPath, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := svc.DeleteDocument(document.Document.Filename); err == nil {
+		t.Fatal("deletion ignored failed fallback persistence")
+	}
+	after, err := os.ReadFile(path)
+	if err != nil || string(before) != string(after) {
+		t.Fatalf("failed deletion changed saved file: %v", err)
 	}
 }
 

@@ -79,7 +79,7 @@
     "type": "text",
     "multiline": false,
     "hint": "可填图片路径",
-    "placeholder": "【证件照】 或 ![证件照](./photo.jpg)"
+    "placeholder": "./photo.jpg 或 ![证件照](./photo.jpg)"
   },
   {
     "index": 9,
@@ -87,7 +87,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "一句话简述（不加粗）",
+    "label": "简述",
     "type": "textarea",
     "multiline": false
   },
@@ -97,7 +97,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 1 条 · 要点（加粗）",
+    "label": "优势 1 · 要点",
     "type": "text",
     "multiline": false
   },
@@ -107,7 +107,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 1 条 · 描述",
+    "label": "优势 1 · 描述",
     "type": "textarea",
     "multiline": false
   },
@@ -117,7 +117,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 2 条 · 要点（加粗）",
+    "label": "优势 2 · 要点",
     "type": "text",
     "multiline": false
   },
@@ -127,7 +127,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 2 条 · 描述",
+    "label": "优势 2 · 描述",
     "type": "textarea",
     "multiline": false
   },
@@ -137,7 +137,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 3 条 · 要点（加粗）",
+    "label": "优势 3 · 要点",
     "type": "text",
     "multiline": false
   },
@@ -147,7 +147,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 3 条 · 描述",
+    "label": "优势 3 · 描述",
     "type": "textarea",
     "multiline": false
   },
@@ -157,7 +157,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 4 条 · 要点（加粗）",
+    "label": "优势 4 · 要点",
     "type": "text",
     "multiline": false
   },
@@ -167,7 +167,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 4 条 · 描述",
+    "label": "优势 4 · 描述",
     "type": "textarea",
     "multiline": false
   },
@@ -177,7 +177,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 5 条 · 要点（加粗）",
+    "label": "优势 5 · 要点",
     "type": "text",
     "multiline": false
   },
@@ -187,7 +187,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 5 条 · 描述",
+    "label": "优势 5 · 描述",
     "type": "textarea",
     "multiline": false
   },
@@ -197,7 +197,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 6 条 · 要点（加粗）",
+    "label": "优势 6 · 要点",
     "type": "text",
     "multiline": false
   },
@@ -207,7 +207,7 @@
     "group": "advantage",
     "groupTitle": "个人优势",
     "groupEn": "Self-Assessment",
-    "label": "第 6 条 · 描述",
+    "label": "优势 6 · 描述",
     "type": "textarea",
     "multiline": false
   },
@@ -217,7 +217,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 1 段 · 起止时间",
+    "label": "经历 1 · 起止时间",
     "type": "text",
     "multiline": false
   },
@@ -227,7 +227,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 1 段 · 公司名称",
+    "label": "经历 1 · 公司名称",
     "type": "text",
     "multiline": false
   },
@@ -237,7 +237,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 1 段 · 部门",
+    "label": "经历 1 · 部门",
     "type": "text",
     "multiline": false
   },
@@ -247,7 +247,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 1 段 · 职位名称",
+    "label": "经历 1 · 职位名称",
     "type": "text",
     "multiline": false
   },
@@ -257,7 +257,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 1 段 · 工作描述",
+    "label": "经历 1 · 工作描述",
     "type": "textarea",
     "multiline": false
   },
@@ -267,7 +267,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 2 段 · 起止时间",
+    "label": "经历 2 · 起止时间",
     "type": "text",
     "multiline": false
   },
@@ -277,7 +277,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 2 段 · 公司名称",
+    "label": "经历 2 · 公司名称",
     "type": "text",
     "multiline": false
   },
@@ -287,7 +287,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 2 段 · 部门",
+    "label": "经历 2 · 部门",
     "type": "text",
     "multiline": false
   },
@@ -297,7 +297,7 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 2 段 · 职位名称",
+    "label": "经历 2 · 职位名称",
     "type": "text",
     "multiline": false
   },
@@ -307,12 +307,162 @@
     "group": "work",
     "groupTitle": "工作经历",
     "groupEn": "Work Experience",
-    "label": "第 2 段 · 工作描述",
+    "label": "经历 2 · 工作描述",
     "type": "textarea",
     "multiline": false
   },
   {
     "index": 32,
+    "key": "work3Period",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 3 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 33,
+    "key": "work3Company",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 3 · 公司名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 34,
+    "key": "work3Dept",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 3 · 部门",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 35,
+    "key": "work3Role",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 3 · 职位名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 36,
+    "key": "work3Desc",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 3 · 工作描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 37,
+    "key": "work4Period",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 4 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 38,
+    "key": "work4Company",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 4 · 公司名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 39,
+    "key": "work4Dept",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 4 · 部门",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 40,
+    "key": "work4Role",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 4 · 职位名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 41,
+    "key": "work4Desc",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 4 · 工作描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 42,
+    "key": "work5Period",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 5 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 43,
+    "key": "work5Company",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 5 · 公司名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 44,
+    "key": "work5Dept",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 5 · 部门",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 45,
+    "key": "work5Role",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 5 · 职位名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 46,
+    "key": "work5Desc",
+    "group": "work",
+    "groupTitle": "工作经历",
+    "groupEn": "Work Experience",
+    "label": "经历 5 · 工作描述",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 47,
     "key": "proj1Name",
     "group": "project",
     "groupTitle": "项目经验",
@@ -322,7 +472,7 @@
     "multiline": false
   },
   {
-    "index": 33,
+    "index": 48,
     "key": "proj1Desc",
     "group": "project",
     "groupTitle": "项目经验",
@@ -332,7 +482,7 @@
     "multiline": false
   },
   {
-    "index": 34,
+    "index": 49,
     "key": "proj2Name",
     "group": "project",
     "groupTitle": "项目经验",
@@ -342,7 +492,7 @@
     "multiline": false
   },
   {
-    "index": 35,
+    "index": 50,
     "key": "proj2Desc",
     "group": "project",
     "groupTitle": "项目经验",
@@ -352,7 +502,7 @@
     "multiline": false
   },
   {
-    "index": 36,
+    "index": 51,
     "key": "proj3Name",
     "group": "project",
     "groupTitle": "项目经验",
@@ -362,7 +512,7 @@
     "multiline": false
   },
   {
-    "index": 37,
+    "index": 52,
     "key": "proj3Desc",
     "group": "project",
     "groupTitle": "项目经验",
@@ -372,7 +522,7 @@
     "multiline": false
   },
   {
-    "index": 38,
+    "index": 53,
     "key": "proj4Name",
     "group": "project",
     "groupTitle": "项目经验",
@@ -382,7 +532,7 @@
     "multiline": false
   },
   {
-    "index": 39,
+    "index": 54,
     "key": "proj4Desc",
     "group": "project",
     "groupTitle": "项目经验",
@@ -392,7 +542,7 @@
     "multiline": false
   },
   {
-    "index": 40,
+    "index": 55,
     "key": "proj5Name",
     "group": "project",
     "groupTitle": "项目经验",
@@ -402,7 +552,7 @@
     "multiline": false
   },
   {
-    "index": 41,
+    "index": 56,
     "key": "proj5Desc",
     "group": "project",
     "groupTitle": "项目经验",
@@ -412,7 +562,7 @@
     "multiline": false
   },
   {
-    "index": 42,
+    "index": 57,
     "key": "proj6Name",
     "group": "project",
     "groupTitle": "项目经验",
@@ -422,7 +572,7 @@
     "multiline": false
   },
   {
-    "index": 43,
+    "index": 58,
     "key": "proj6Desc",
     "group": "project",
     "groupTitle": "项目经验",
@@ -432,7 +582,7 @@
     "multiline": true
   },
   {
-    "index": 44,
+    "index": 59,
     "key": "edu1Period",
     "group": "education",
     "groupTitle": "教育背景",
@@ -442,7 +592,7 @@
     "multiline": false
   },
   {
-    "index": 45,
+    "index": 60,
     "key": "edu1School",
     "group": "education",
     "groupTitle": "教育背景",
@@ -452,7 +602,7 @@
     "multiline": false
   },
   {
-    "index": 46,
+    "index": 61,
     "key": "edu1Major",
     "group": "education",
     "groupTitle": "教育背景",
@@ -462,7 +612,7 @@
     "multiline": false
   },
   {
-    "index": 47,
+    "index": 62,
     "key": "edu1Honor",
     "group": "education",
     "groupTitle": "教育背景",
@@ -472,17 +622,18 @@
     "multiline": false
   },
   {
-    "index": 48,
+    "index": 63,
     "key": "edu1Achievement",
     "group": "education",
     "groupTitle": "教育背景",
     "groupEn": "Education",
     "label": "教育 1 · 学术成果",
     "type": "textarea",
-    "multiline": false
+    "multiline": false,
+    "hint": "选填，记录论文、研究或其他学术成果。"
   },
   {
-    "index": 49,
+    "index": 64,
     "key": "edu2Period",
     "group": "education",
     "groupTitle": "教育背景",
@@ -492,7 +643,7 @@
     "multiline": false
   },
   {
-    "index": 50,
+    "index": 65,
     "key": "edu2School",
     "group": "education",
     "groupTitle": "教育背景",
@@ -502,7 +653,7 @@
     "multiline": false
   },
   {
-    "index": 51,
+    "index": 66,
     "key": "edu2Major",
     "group": "education",
     "groupTitle": "教育背景",
@@ -512,7 +663,7 @@
     "multiline": false
   },
   {
-    "index": 52,
+    "index": 67,
     "key": "edu2Honor",
     "group": "education",
     "groupTitle": "教育背景",
@@ -522,12 +673,74 @@
     "multiline": false
   },
   {
-    "index": 53,
+    "index": 68,
+    "key": "edu2Achievement",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 2 · 学术成果",
+    "type": "textarea",
+    "multiline": false,
+    "hint": "选填，记录论文、研究或其他学术成果。"
+  },
+  {
+    "index": 69,
+    "key": "edu3Period",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 3 · 起止时间",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 70,
+    "key": "edu3School",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 3 · 学校名称",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 71,
+    "key": "edu3Major",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 3 · 专业 / 学位",
+    "type": "text",
+    "multiline": false
+  },
+  {
+    "index": 72,
+    "key": "edu3Honor",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 3 · 主要荣誉",
+    "type": "textarea",
+    "multiline": false
+  },
+  {
+    "index": 73,
+    "key": "edu3Achievement",
+    "group": "education",
+    "groupTitle": "教育背景",
+    "groupEn": "Education",
+    "label": "教育 3 · 学术成果",
+    "type": "textarea",
+    "multiline": false,
+    "hint": "选填，记录论文、研究或其他学术成果。"
+  },
+  {
+    "index": 74,
     "key": "certLines",
     "group": "certificate",
     "groupTitle": "资格证书",
     "groupEn": "Professional Skills",
-    "label": "证书 / 技能（每行一条）",
+    "label": "证书 / 技能",
     "type": "lines",
     "multiline": true
   }

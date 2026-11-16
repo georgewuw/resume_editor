@@ -56,6 +56,7 @@ func renderPDF(sourcePath string) ([]byte, error) {
 	if _, err := page.EvalContext(ctx, `
 		await document.fonts.ready;
 		await Promise.all(Array.from(document.images, image => image.decode()));
+		await window.resumeLayoutReady;
 		return document.body.offsetHeight;
 	`); err != nil {
 		return nil, fmt.Errorf("prepare PDF layout: %w", err)

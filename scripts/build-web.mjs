@@ -1,6 +1,7 @@
-// mygo serves native ES modules; building needs only Go and Node standard libraries.
+// mygo serves native ES modules; Lucide assets are included at build time.
 import fs from 'node:fs';
 import path from 'node:path';
+import { Pencil, Trash2 } from 'lucide-static';
 import { ROOT, generateAssets } from './lib/assets.mjs';
 
 const frontend = path.join(ROOT, 'frontend');
@@ -21,6 +22,22 @@ fs.cpSync(frontend, dist, {
   recursive: true,
   filter: (source) => source !== path.join(frontend, 'styles') && !source.endsWith('.d.ts'),
 });
+let html = fs.readFileSync(path.join(frontend, 'index.html'), 'utf8');
+for (const [name, svg] of [
+  ['pencil', Pencil],
+  ['trash-2', Trash2],
+]) {
+  const marker = '<!-- lucide:' + name + ' -->';
+  if (!html.includes(marker)) throw new Error('Missing Lucide icon marker: ' + name);
+  html = html.replaceAll(marker, svg.replace('<svg', '<svg aria-hidden="true" focusable="false"'));
+}
+fs.writeFileSync(path.join(dist, 'index.html'), html);
+const licenseDirectory = path.join(dist, 'licenses');
+fs.mkdirSync(licenseDirectory, { recursive: true });
+fs.copyFileSync(
+  path.join(ROOT, 'node_modules', 'lucide-static', 'LICENSE'),
+  path.join(licenseDirectory, 'lucide.txt'),
+);
 fs.writeFileSync(path.join(dist, 'style.css'), css);
 fs.writeFileSync(
   path.join(dist, 'data.js'),

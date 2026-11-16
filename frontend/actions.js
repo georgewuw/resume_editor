@@ -60,8 +60,9 @@ export function createDocumentActions({
     saveTimer = setTimeout(() => flush().catch(failure), 900);
   }
 
-  async function save(quiet = true) {
-    pending = snapshot();
+  async function save(quiet = true, savedSnapshot = snapshot()) {
+    if (element('workspace').inert && !quiet) return;
+    pending = savedSnapshot;
     await flush();
     if (!quiet) notices.toast('当前简历已保存');
   }
@@ -70,9 +71,10 @@ export function createDocumentActions({
     const button = element('btnPdf');
     button.disabled = true;
     try {
-      await save();
+      const exported = snapshot();
+      await save(true, exported);
       notices.status('正在导出 PDF…', 'busy');
-      const result = await backend.export(copyContent(content));
+      const result = await backend.export(exported.filename, exported.content);
       notices.status('已保存');
       notices.toast('PDF 已导出：' + result);
       logger.info('export_completed');

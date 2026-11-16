@@ -23,7 +23,7 @@
   /* 顶栏与分栏几何：JS 拖动时实时改写 --sidebar-w / --preview-w */
   --titlebar-h: 40px; /* 全屏或桌面不显示原生按钮时，仍保留工具栏内容高度。 */
   --pane-head-h: 48px;
-  --sidebar-default-w: 220px;
+  --sidebar-default-w: 200px;
   --sidebar-min-w: 168px;
   --sidebar-max-w: 360px;
   --sidebar-w: var(--sidebar-default-w);
@@ -70,7 +70,7 @@ button {
 }
 
 .app {
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;

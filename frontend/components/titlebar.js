@@ -21,6 +21,7 @@ export function createTitlebar({ platform, onModeChange }) {
   segments.forEach((segment) => {
     segment.addEventListener('click', () => setMode(segment.dataset.mode));
   });
+  element('btnDocument').addEventListener('click', () => setMode('files'));
 
   function setDocument(info) {
     element('activeFilename').textContent = info.filename;

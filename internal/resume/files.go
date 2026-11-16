@@ -44,13 +44,17 @@ type DocumentWorkspace struct {
 
 // Workspace restores the last opened file; a removed file falls back to the general resume.
 func (r *Resume) Workspace() (DocumentWorkspace, error) {
-	documents, err := r.ListDocuments()
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.workspace()
+}
+
+func (r *Resume) workspace() (DocumentWorkspace, error) {
+	documents, err := r.listDocuments()
 	if err != nil {
 		return DocumentWorkspace{}, err
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	filename := filepath.Base(r.paths.ContentFile)
+	filename := documents[0].Filename
 	if saved, err := os.ReadFile(filepath.Join(filepath.Dir(r.paths.ContentFile), "active-document.json")); err == nil {
 		var previous string
 		if json.Unmarshal(saved, &previous) == nil {
@@ -92,8 +96,12 @@ func (r *Resume) Progress(content Content) (ContentProgress, error) {
 	if err != nil {
 		return ContentProgress{}, r.failure("progress", apperr.DocumentInvalid, err)
 	}
-	progress := ContentProgress{Total: len(r.resources.Schema), Groups: map[string]int{}}
+	progress := ContentProgress{Groups: map[string]int{}}
 	for _, field := range r.resources.Schema {
+		if _, exists := content.Fields[field.Key]; !exists && len(optionalFieldGroup(field.Key)) > 0 {
+			continue
+		}
+		progress.Total++
 		value := strings.TrimSpace(strings.Join(content.Fields[field.Key], "\n"))
 		original := strings.TrimSpace(strings.Join(initial.Fields[field.Key], "\n"))
 		if value == "" || value == original || (strings.HasPrefix(value, "【") && strings.HasSuffix(value, "】")) {
@@ -150,6 +158,11 @@ func (r *Resume) documentPath(filename string) (string, error) {
 	return filepath.Join(filepath.Dir(r.paths.ContentFile), filename), nil
 }
 
+// A deleted general resume must not reappear from the bundled template on restart.
+func (r *Resume) generalDeletionPath() string {
+	return filepath.Join(filepath.Dir(r.paths.ContentFile), "general-document-deleted.json")
+}
+
 func (r *Resume) readDocument(filename string) (ResumeDocument, error) {
 	path, err := r.documentPath(filename)
 	if err != nil {
@@ -159,6 +172,11 @@ func (r *Resume) readDocument(filename string) (ResumeDocument, error) {
 	stat, err := os.Lstat(path)
 	var data []byte
 	if os.IsNotExist(err) && filename == filepath.Base(r.paths.ContentFile) {
+		if _, markerErr := os.Stat(r.generalDeletionPath()); markerErr == nil {
+			return document, err
+		} else if !os.IsNotExist(markerErr) {
+			return document, markerErr
+		}
 		data = []byte(r.resources.DocumentMD)
 	} else {
 		if err != nil {
@@ -195,11 +213,19 @@ func (r *Resume) readDocument(filename string) (ResumeDocument, error) {
 func (r *Resume) ListDocuments() ([]DocumentInfo, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	return r.listDocuments()
+}
+
+func (r *Resume) listDocuments() ([]DocumentInfo, error) {
 	legacy, err := r.readDocument(filepath.Base(r.paths.ContentFile))
-	if err != nil {
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, r.failure("list_documents", apperr.ContentLoad, err)
 	}
-	items := []DocumentInfo{legacy.Document}
+	items := []DocumentInfo{}
+	if err == nil {
+		items = append(items, legacy.Document)
+	}
+	customStart := len(items)
 	entries, err := os.ReadDir(filepath.Dir(r.paths.ContentFile))
 	if err != nil && !os.IsNotExist(err) {
 		return nil, r.failure("list_documents", apperr.ContentLoad, err)
@@ -216,10 +242,85 @@ func (r *Resume) ListDocuments() ([]DocumentInfo, error) {
 		}
 		items = append(items, document.Document)
 	}
-	sort.SliceStable(items[1:], func(i, j int) bool {
-		return items[i+1].ModifiedAt > items[j+1].ModifiedAt
+	sort.SliceStable(items[customStart:], func(i, j int) bool {
+		return items[i+customStart].ModifiedAt > items[j+customStart].ModifiedAt
 	})
+	if len(items) == 0 {
+		// If remaining files were removed outside the app, restore a usable default.
+		if err := os.Remove(r.generalDeletionPath()); err != nil && !os.IsNotExist(err) {
+			return nil, r.failure("list_documents", apperr.ContentLoad, err)
+		}
+		general, err := r.readDocument(filepath.Base(r.paths.ContentFile))
+		if err != nil {
+			return nil, r.failure("list_documents", apperr.ContentLoad, err)
+		}
+		items = append(items, general.Document)
+	}
 	return items, nil
+}
+
+// DeleteDocument returns a ready workspace and never removes the last usable resume.
+func (r *Resume) DeleteDocument(filename string) (DocumentWorkspace, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	path, err := r.documentPath(filename)
+	if err != nil {
+		return DocumentWorkspace{}, r.failure("delete_document", apperr.DocumentDelete, err)
+	}
+	workspace, err := r.workspace()
+	if err != nil {
+		return DocumentWorkspace{}, r.failure("delete_document", apperr.DocumentDelete, err)
+	}
+	remaining := make([]DocumentInfo, 0, len(workspace.Documents))
+	found := false
+	for _, document := range workspace.Documents {
+		if document.Filename == filename {
+			found = true
+			continue
+		}
+		remaining = append(remaining, document)
+	}
+	if !found {
+		return DocumentWorkspace{}, r.failure("delete_document", apperr.DocumentDelete, os.ErrNotExist)
+	}
+	if len(remaining) == 0 {
+		return DocumentWorkspace{}, r.failure("delete_document", apperr.DocumentLast, errors.New("last resume is required"))
+	}
+	previous := workspace.Current.Document.Filename
+	if previous == filename {
+		workspace.Current, err = r.readDocument(remaining[0].Filename)
+		if err != nil {
+			return DocumentWorkspace{}, r.failure("delete_document", apperr.DocumentDelete, err)
+		}
+	}
+	// Commit the fallback before removal, so a preference failure keeps the file intact.
+	if err := r.rememberDocument(workspace.Current.Document.Filename); err != nil {
+		return DocumentWorkspace{}, r.failure("delete_document", apperr.DocumentDelete, err)
+	}
+	general := filename == filepath.Base(r.paths.ContentFile)
+	if general {
+		err = writeDocumentFile(r.generalDeletionPath(), []byte("true\n"))
+	}
+	if err == nil {
+		err = os.Remove(path)
+		if general && os.IsNotExist(err) {
+			err = nil // The bundled general resume may not have been saved yet.
+		}
+	}
+	if err != nil {
+		if general {
+			if rollbackErr := os.Remove(r.generalDeletionPath()); rollbackErr != nil && !os.IsNotExist(rollbackErr) {
+				r.failure("delete_document_rollback", apperr.DocumentDelete, rollbackErr)
+			}
+		}
+		if rollbackErr := r.rememberDocument(previous); rollbackErr != nil {
+			r.failure("delete_document_rollback", apperr.DocumentDelete, rollbackErr)
+		}
+		return DocumentWorkspace{}, r.failure("delete_document", apperr.DocumentDelete, err)
+	}
+	workspace.Documents = remaining
+	r.logger.Info("document_deleted")
+	return workspace, nil
 }
 
 func (r *Resume) OpenDocument(filename string) (ResumeDocument, error) {

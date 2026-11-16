@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>简历模板 · A4 双页版式</title>
+<title>简历模板 · A4 双页自适应版式</title>
 <style>
 /* ============================================================
-   设计规格（依据样式参考图逐像素测量换算，固定双页 A4）
+   设计规格（依据样式参考图逐像素测量换算，双页 A4，项目条目自适应分页）
    参考图 A4 页面 = 372 x 527 px；1px = 0.5645mm = 1.6pt
    主色 #244664 / 分隔线 #C8D1D8 / 画布 #E6E6E6
    顶栏：距顶 6.2mm、高 6.8mm、左短块 11.3mm + 缝 2.3mm + 长条
@@ -15,7 +15,7 @@
    页眉：姓名与三行信息按整页水平中心居中；信息为楷体小四 12pt / 行距 15.7pt
          证件照 29 x 37.2mm（原稿外框 245 x 316px），绝对定位于内容区右上角
    行距与对齐：在参考图基础上做专业化优化（网格列对齐 + 两端对齐）
-   间距经满负荷排版压测校准：按参考图量级文案填充时两页均不溢出
+   仅项目经验允许跨页，按第一页剩余空间移动完整项目条目
    ============================================================ */
 :root{
   --navy:#244664;
@@ -83,7 +83,7 @@ body{
 .topbar .seg-short{width:var(--topbar-short);background:var(--navy);flex:none;}
 .topbar .seg-gap{width:var(--topbar-gap);flex:none;}
 .topbar .seg-long{flex:1;background:var(--navy);}
-.bottombar{position:absolute;bottom:0.5mm;left:var(--pad-x);right:var(--pad-x);height:var(--bottombar-h);background:var(--navy);}
+.bottombar{position:absolute;bottom:0;left:var(--pad-x);right:var(--pad-x);height:var(--bottombar-h);background:var(--navy);}
 
 .page-inner{
   position:absolute;
@@ -111,9 +111,9 @@ body.filled .f{background:none;border-bottom:none;padding:0;color:inherit;font:i
   font-size:var(--fs-name);font-weight:700;letter-spacing:3px;
   color:var(--ink-strong);line-height:1.25;
 }
-/* 原稿：楷体 / 小四（12pt）/ 三行居中 / 等行距 / 无加粗与颜色区分 */
+/* 个人信息：英数优先 Times New Roman，中文沿用楷体 / 小四（12pt） */
 .hdr-info{
-  font-family:"KaiTi","楷体","STKaiti","华文楷体","Kaiti SC","Noto Serif CJK SC","Songti SC",serif;
+  font-family:"Times New Roman","KaiTi","楷体","STKaiti","华文楷体","Kaiti SC","Noto Serif CJK SC","Songti SC",serif;
   font-size:var(--fs-info);line-height:var(--lh-info);
   color:#1A1A1A;font-weight:400;
 }
@@ -142,13 +142,14 @@ body.filled .hdr-photo > .f{background:linear-gradient(160deg,#F4F7FA 0%,#E8EEF3
 .sec:last-child{margin-bottom:0;}
 .sec-head{
   display:flex;align-items:center;gap:2.4mm;
-  border-bottom:1px solid var(--rule);
-  padding-bottom:var(--sec-pb);margin-bottom:var(--sec-mb);
+  margin-bottom:var(--sec-mb);
 }
 .sec-icon{width:var(--icon);height:var(--icon);flex:none;display:block;}
 .sec-title{
+  display:block;flex:1;
   font-size:var(--fs-title);font-weight:700;color:var(--navy);
   letter-spacing:.8px;line-height:1.25;
+  padding-bottom:var(--sec-pb);border-bottom:1px solid var(--rule);
 }
 .sec-en{font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:.2px;}
 
@@ -243,87 +244,156 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
         <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
           <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
-          <rect x="11.5" y="13.5" width="17" height="11.5" rx="1" stroke="#244664" stroke-width="1.6"/>
-          <path d="M16 29h8M20 25v4" stroke="#244664" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M14.5 18h6M14.5 21h4" stroke="#244664" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="m20 11 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9L20 11z" stroke="#244664" stroke-width="1.5" stroke-linejoin="round"/>
         </svg>
         <span class="sec-title">个人优势<span class="sec-en">（Self-Assessment）</span></span>
       </div>
       <div class="sec-body">
         <p class="para adv-brief"><span class="f" data-f="brief">【简述】</span></p>
-        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv1Lead">【优势要点】</span></strong><span class="f" data-f="adv1Text">【描述】</span></p>
-        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv2Lead">【优势要点】</span></strong><span class="f" data-f="adv2Text">【描述】</span></p>
-        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv3Lead">【优势要点】</span></strong><span class="f" data-f="adv3Text">【描述】</span></p>
-        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv4Lead">【优势要点】</span></strong><span class="f" data-f="adv4Text">【描述】</span></p>
-        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv5Lead">【优势要点】</span></strong><span class="f" data-f="adv5Text">【描述】</span></p>
-        <p class="para adv-item"><strong class="lead"><span class="f" data-f="adv6Lead">【优势要点】</span></strong><span class="f" data-f="adv6Text">【描述】</span></p>
+        <!-- optional:adv1Text -->
+        <p class="para adv-item"><!-- optional:adv1Lead --><strong class="lead"><span class="f" data-f="adv1Lead">【优势要点】</span></strong><!-- /optional --><span class="f" data-f="adv1Text">【描述】</span></p>
+        <!-- /optional -->
+        <!-- optional:adv2Text -->
+        <p class="para adv-item"><!-- optional:adv2Lead --><strong class="lead"><span class="f" data-f="adv2Lead">【优势要点】</span></strong><!-- /optional --><span class="f" data-f="adv2Text">【描述】</span></p>
+        <!-- /optional -->
+        <!-- optional:adv3Text -->
+        <p class="para adv-item"><!-- optional:adv3Lead --><strong class="lead"><span class="f" data-f="adv3Lead">【优势要点】</span></strong><!-- /optional --><span class="f" data-f="adv3Text">【描述】</span></p>
+        <!-- /optional -->
+        <!-- optional:adv4Text -->
+        <p class="para adv-item"><!-- optional:adv4Lead --><strong class="lead"><span class="f" data-f="adv4Lead">【优势要点】</span></strong><!-- /optional --><span class="f" data-f="adv4Text">【描述】</span></p>
+        <!-- /optional -->
+        <!-- optional:adv5Text -->
+        <p class="para adv-item"><!-- optional:adv5Lead --><strong class="lead"><span class="f" data-f="adv5Lead">【优势要点】</span></strong><!-- /optional --><span class="f" data-f="adv5Text">【描述】</span></p>
+        <!-- /optional -->
+        <!-- optional:adv6Text -->
+        <p class="para adv-item"><!-- optional:adv6Lead --><strong class="lead"><span class="f" data-f="adv6Lead">【优势要点】</span></strong><!-- /optional --><span class="f" data-f="adv6Text">【描述】</span></p>
+        <!-- /optional -->
       </div>
     </section>
 
+    <!-- optional:work1Period,work2Period,work3Period,work4Period,work5Period -->
     <!-- 模块：工作经历（Work Experience） -->
     <section class="sec" data-page="1">
       <div class="sec-head">
         <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
           <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
-          <rect x="11" y="14" width="18" height="13" rx="1.2" stroke="#244664" stroke-width="1.5"/>
-          <path d="M15 14v-2h7v2" stroke="#244664" stroke-width="1.5"/>
-          <path d="M14 20h12M14 23h8" stroke="#244664" stroke-width="1.2" stroke-linecap="round"/>
+          <rect x="10.5" y="15" width="19" height="13" rx="1.5" stroke="#244664" stroke-width="1.5"/>
+          <path d="M15 15v-2.2c0-.8.6-1.3 1.4-1.3h7.2c.8 0 1.4.5 1.4 1.3V15M10.5 19h19M18 19v2h4v-2" stroke="#244664" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <span class="sec-title">工作经历<span class="sec-en">（Work Experience）</span></span>
       </div>
       <div class="sec-body">
+        <!-- optional:work1Period -->
         <div class="entry">
           <div class="entry-head">
             <span class="when"><span class="f" data-f="work1Period">【起止时间】</span></span>
-            <span class="org"><span class="f" data-f="work1Company">【学校/公司名称】</span></span>
+            <span class="org"><span class="f" data-f="work1Company">【公司名称】</span></span>
             <span class="dept"><span class="f" data-f="work1Dept">【部门】</span></span>
             <span class="role"><span class="f" data-f="work1Role">【职位名称】</span></span>
           </div>
           <p class="para desc"><span class="f" data-f="work1Desc">【描述】</span></p>
         </div>
+        <!-- /optional -->
+        <!-- optional:work2Period -->
         <div class="entry">
           <div class="entry-head">
             <span class="when"><span class="f" data-f="work2Period">【起止时间】</span></span>
-            <span class="org"><span class="f" data-f="work2Company">【学校/公司名称】</span></span>
+            <span class="org"><span class="f" data-f="work2Company">【公司名称】</span></span>
             <span class="dept"><span class="f" data-f="work2Dept">【部门】</span></span>
             <span class="role"><span class="f" data-f="work2Role">【职位名称】</span></span>
           </div>
           <p class="para desc"><span class="f" data-f="work2Desc">【描述】</span></p>
         </div>
+        <!-- /optional -->
+        <!-- optional:work3Period -->
+        <div class="entry">
+          <div class="entry-head">
+            <span class="when"><span class="f" data-f="work3Period">【起止时间】</span></span>
+            <span class="org"><span class="f" data-f="work3Company">【公司名称】</span></span>
+            <span class="dept"><span class="f" data-f="work3Dept">【部门】</span></span>
+            <span class="role"><span class="f" data-f="work3Role">【职位名称】</span></span>
+          </div>
+          <p class="para desc"><span class="f" data-f="work3Desc">【描述】</span></p>
+        </div>
+        <!-- /optional -->
+        <!-- optional:work4Period -->
+        <div class="entry">
+          <div class="entry-head">
+            <span class="when"><span class="f" data-f="work4Period">【起止时间】</span></span>
+            <span class="org"><span class="f" data-f="work4Company">【公司名称】</span></span>
+            <span class="dept"><span class="f" data-f="work4Dept">【部门】</span></span>
+            <span class="role"><span class="f" data-f="work4Role">【职位名称】</span></span>
+          </div>
+          <p class="para desc"><span class="f" data-f="work4Desc">【描述】</span></p>
+        </div>
+        <!-- /optional -->
+        <!-- optional:work5Period -->
+        <div class="entry">
+          <div class="entry-head">
+            <span class="when"><span class="f" data-f="work5Period">【起止时间】</span></span>
+            <span class="org"><span class="f" data-f="work5Company">【公司名称】</span></span>
+            <span class="dept"><span class="f" data-f="work5Dept">【部门】</span></span>
+            <span class="role"><span class="f" data-f="work5Role">【职位名称】</span></span>
+          </div>
+          <p class="para desc"><span class="f" data-f="work5Desc">【描述】</span></p>
+        </div>
+        <!-- /optional -->
       </div>
     </section>
-
-    <!-- 模块：项目经验（Project Experience）—— 第 1 页部分 -->
-    <section class="sec" data-page="1" id="sec-project-1">
+    <!-- /optional -->
+    <!-- optional:proj1Name,proj2Name,proj3Name,proj4Name,proj5Name,proj6Name -->
+    <!-- 模块：项目经验（Project Experience）—— 紧接工作经历，放不下的条目续到第 2 页 -->
+    <section class="sec" id="sec-project">
       <div class="sec-head">
         <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
           <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
-          <path d="M12.5 27.5l2.2-5.2 10.6-10.6a2 2 0 0 1 2.8 0l1 1a2 2 0 0 1 0 2.8L18.5 26.1l-5.2 2.2z" stroke="#244664" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M23.5 13.5l3 3" stroke="#244664" stroke-width="1.3"/>
+          <path d="M10.8 15h6.6l2.2 2h9.6v11H10.8z" stroke="#244664" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M14.5 24.5v-2.6h3v2.6M19.5 24.5v-4h3v4M24.5 24.5v-6h2v6" stroke="#244664" stroke-width="1.3" stroke-linejoin="round"/>
         </svg>
         <span class="sec-title">项目经验<span class="sec-en">（Project Experience）</span></span>
       </div>
       <div class="sec-body">
+        <!-- optional:proj1Name -->
         <div class="entry">
           <p class="proj-title"><span class="f" data-f="proj1Name">【项目名称】</span></p>
           <p class="para desc"><span class="f" data-f="proj1Desc">【描述】</span></p>
         </div>
+        <!-- /optional -->
+        <!-- optional:proj2Name -->
         <div class="entry">
           <p class="proj-title"><span class="f" data-f="proj2Name">【项目名称】</span></p>
           <p class="para desc"><span class="f" data-f="proj2Desc">【描述】</span></p>
         </div>
+        <!-- /optional -->
+        <!-- optional:proj3Name -->
         <div class="entry">
           <p class="proj-title"><span class="f" data-f="proj3Name">【项目名称】</span></p>
           <p class="para desc"><span class="f" data-f="proj3Desc">【描述】</span></p>
         </div>
+        <!-- /optional -->
+        <!-- optional:proj4Name -->
         <div class="entry">
           <p class="proj-title"><span class="f" data-f="proj4Name">【项目名称】</span></p>
           <p class="para desc"><span class="f" data-f="proj4Desc">【描述】</span></p>
         </div>
+        <!-- /optional -->
+        <!-- optional:proj5Name -->
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj5Name">【项目名称】</span></p>
+          <p class="para desc"><span class="f" data-f="proj5Desc">【描述】</span></p>
+        </div>
+        <!-- /optional -->
+        <!-- optional:proj6Name -->
+        <div class="entry">
+          <p class="proj-title"><span class="f" data-f="proj6Name">【项目名称】</span></p>
+          <div class="proj-lines para"><div class="f" data-f="proj6Desc" data-multiline="1"><span class="ln">【描述】</span></div></div>
+        </div>
+        <!-- /optional -->
       </div>
     </section>
+    <!-- /optional -->
 
   </div>
 </div>
@@ -332,22 +402,9 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
 <div class="page" id="page-2">
   <div class="topbar"><span class="seg-short"></span><span class="seg-gap"></span><span class="seg-long"></span></div>
   <div class="bottombar"></div>
-  <div class="page-inner" id="page-inner-2" style="top:34mm">
+  <div class="page-inner" id="page-inner-2">
 
-    <!-- 模块：项目经验（Project Experience）—— 续（不重复栏目标题） -->
-    <section class="sec" data-page="2" id="sec-project-2">
-      <div class="sec-body">
-        <div class="entry">
-          <p class="proj-title"><span class="f" data-f="proj5Name">【项目名称】</span></p>
-          <p class="para desc"><span class="f" data-f="proj5Desc">【描述】</span></p>
-        </div>
-        <div class="entry">
-          <p class="proj-title"><span class="f" data-f="proj6Name">【项目名称】</span></p>
-          <div class="proj-lines para"><div class="f" data-f="proj6Desc" data-multiline="1"><span class="ln">【描述】</span></div></div>
-        </div>
-      </div>
-    </section>
-
+    <!-- optional:edu1Period,edu2Period,edu3Period -->
     <!-- 模块：教育背景（Education） -->
     <section class="sec" data-page="2">
       <div class="sec-head">
@@ -361,25 +418,48 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
         <span class="sec-title">教育背景<span class="sec-en">（Education）</span></span>
       </div>
       <div class="sec-body">
+        <!-- optional:edu1Period -->
         <div class="entry">
           <div class="edu-head">
             <span class="when"><span class="f" data-f="edu1Period">【起止时间】</span></span>
-            <span class="school"><span class="f" data-f="edu1School">【学校/公司名称】</span></span>
+            <span class="school"><span class="f" data-f="edu1School">【学校名称】</span></span>
             <span class="major"><span class="f" data-f="edu1Major">【专业/学位】</span></span>
           </div>
           <p class="para edu-note"><span class="k">主要荣誉：</span><span class="f" data-f="edu1Honor">【描述】</span></p>
+          <!-- optional:edu1Achievement -->
           <p class="para edu-note"><span class="k">学术成果：</span><span class="f" data-f="edu1Achievement">【描述】</span></p>
+          <!-- /optional -->
         </div>
+        <!-- /optional -->
+        <!-- optional:edu2Period -->
         <div class="entry">
           <div class="edu-head">
             <span class="when"><span class="f" data-f="edu2Period">【起止时间】</span></span>
-            <span class="school"><span class="f" data-f="edu2School">【学校/公司名称】</span></span>
+            <span class="school"><span class="f" data-f="edu2School">【学校名称】</span></span>
             <span class="major"><span class="f" data-f="edu2Major">【专业/学位】</span></span>
           </div>
           <p class="para edu-note"><span class="k">主要荣誉：</span><span class="f" data-f="edu2Honor">【描述】</span></p>
+          <!-- optional:edu2Achievement -->
+          <p class="para edu-note"><span class="k">学术成果：</span><span class="f" data-f="edu2Achievement">【描述】</span></p>
+          <!-- /optional -->
         </div>
+        <!-- /optional -->
+        <!-- optional:edu3Period -->
+        <div class="entry">
+          <div class="edu-head">
+            <span class="when"><span class="f" data-f="edu3Period">【起止时间】</span></span>
+            <span class="school"><span class="f" data-f="edu3School">【学校名称】</span></span>
+            <span class="major"><span class="f" data-f="edu3Major">【专业/学位】</span></span>
+          </div>
+          <p class="para edu-note"><span class="k">主要荣誉：</span><span class="f" data-f="edu3Honor">【描述】</span></p>
+          <!-- optional:edu3Achievement -->
+          <p class="para edu-note"><span class="k">学术成果：</span><span class="f" data-f="edu3Achievement">【描述】</span></p>
+          <!-- /optional -->
+        </div>
+        <!-- /optional -->
       </div>
     </section>
+    <!-- /optional -->
 
     <!-- 模块：资格证书（Professional Skills） -->
     <section class="sec" data-page="2">
@@ -387,9 +467,9 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
         <svg class="sec-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="20" cy="20" r="18" stroke="#244664" stroke-width="2"/>
           <circle cx="20" cy="20" r="14.6" stroke="#244664" stroke-width="1"/>
-          <path d="M13 13l14 14M27 13L13 27" stroke="#244664" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="13" cy="13" r="2.4" stroke="#244664" stroke-width="1.5"/>
-          <circle cx="27" cy="13" r="2.4" stroke="#244664" stroke-width="1.5"/>
+          <path d="M12 12h12.5l3.5 3.5V26H12zM24.5 12v4h3.2M15 18h9M15 21h6" stroke="#244664" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="23.5" cy="24.5" r="2.5" stroke="#244664" stroke-width="1.4"/>
+          <path d="m22.3 26.5-.5 3 1.7-1 1.8 1-.5-3" stroke="#244664" stroke-width="1.3" stroke-linejoin="round"/>
         </svg>
         <span class="sec-title">资格证书<span class="sec-en">（Professional Skills）</span></span>
       </div>
@@ -401,5 +481,29 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
   </div>
 </div>
 
+<script>
+// 只在项目经验中分页；正文其余模块沿用原有双页布局。
+window.resumeLayoutReady = document.fonts.ready.then(() => {
+  const projects = document.getElementById('sec-project');
+  if (!projects) return;
+  const first = document.getElementById('page-inner-1');
+  const body = projects.querySelector('.sec-body');
+  const continuation = projects.cloneNode(false);
+  continuation.removeAttribute('id');
+  const continuedBody = body.cloneNode(false);
+  continuation.append(continuedBody);
+  document.getElementById('page-inner-2').prepend(continuation);
+
+  while (first.scrollHeight > first.clientHeight && body.lastElementChild) {
+    continuedBody.prepend(body.lastElementChild);
+  }
+  // 第一页连一条项目都放不下时，标题随第一条一起移到下一页。
+  if (!body.children.length) {
+    continuation.prepend(projects.querySelector('.sec-head'));
+    projects.remove();
+  }
+  if (!continuedBody.children.length) continuation.remove();
+});
+</script>
 </body>
 </html>

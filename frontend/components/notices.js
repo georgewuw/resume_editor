@@ -16,6 +16,7 @@ export function createNotices(errors) {
   function status(message, kind = '') {
     element('saveText').textContent = message;
     element('saveState').className = 'save-state' + (kind ? ' ' + kind : '');
+    element('saveState').title = message;
   }
 
   return { toast, status, failure: (error) => toast(errors.describe(error), true) };

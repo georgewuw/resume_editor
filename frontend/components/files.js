@@ -1,4 +1,5 @@
 import { element } from '../dom.js';
+import { createIcon } from './icons.js';
 
 function documentTitle(info) {
   return info.role || '通用简历';
@@ -6,26 +7,30 @@ function documentTitle(info) {
 
 function modifiedLabel(info) {
   if (!info.modifiedAt) return '尚未保存';
-  return (
-    '更新于 ' +
-    new Intl.DateTimeFormat('zh-CN', {
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).format(new Date(info.modifiedAt))
-  );
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date(info.modifiedAt));
 }
 
 /** File management owns its list and creation form, but never mutates editor content. */
-export function createFiles({ onOpen, onCreate, onJDChange, onEdit }) {
+export function createFiles({ onOpen, onCreate, onDelete, onJDChange, onEdit }) {
   const dialog = element('newDocumentDialog');
   const form = element('newDocumentForm');
+  const deleteDialog = element('deleteDocumentDialog');
+  const deleteForm = element('deleteDocumentForm');
+  const deleteButton = element('btnDeleteDocument');
+  let deleteTarget;
+  let deleting = false;
   let active;
 
   function setDocuments(documents, info) {
     active = info;
+    deleteButton.disabled = documents.length < 2;
+    deleteButton.title = documents.length < 2 ? '至少保留一份简历' : '删除当前简历';
     element('fileCount').textContent = String(documents.length);
     const list = element('fileList');
     list.replaceChildren();
@@ -35,10 +40,8 @@ export function createFiles({ onOpen, onCreate, onJDChange, onEdit }) {
       button.type = 'button';
       button.className = 'file-item' + (entry.filename === info.filename ? ' active' : '');
       if (entry.filename === info.filename) button.setAttribute('aria-current', 'true');
-      const icon = document.createElement('span');
-      icon.className = 'file-icon';
-      icon.textContent = 'MD';
-      icon.setAttribute('aria-hidden', 'true');
+      const icon = createIcon('file');
+      icon.setAttribute('class', 'file-icon');
       const copy = document.createElement('span');
       copy.className = 'file-item-copy';
       const title = document.createElement('span');
@@ -46,8 +49,9 @@ export function createFiles({ onOpen, onCreate, onJDChange, onEdit }) {
       title.textContent = documentTitle(entry);
       const company = document.createElement('span');
       company.className = 'file-item-company';
-      company.textContent = entry.company || (entry.role ? '未指定公司' : '适用于所有岗位');
-      copy.append(title, company);
+      company.textContent = entry.company;
+      copy.append(title);
+      if (entry.company) copy.append(company);
       button.append(icon, copy);
       button.title = entry.filename;
       button.setAttribute(
@@ -61,8 +65,8 @@ export function createFiles({ onOpen, onCreate, onJDChange, onEdit }) {
     element('sideDocumentName').textContent = documentTitle(info);
     element('sideDocumentName').title = info.filename;
     element('documentTitle').textContent = documentTitle(info);
-    element('documentCompany').textContent =
-      info.company || (info.role ? '未指定公司' : '所有岗位');
+    element('documentCompany').textContent = info.company;
+    element('documentCompanyRow').hidden = !info.company;
     element('documentFilename').textContent = info.filename;
     element('documentModified').textContent = modifiedLabel(info);
   }
@@ -80,11 +84,47 @@ export function createFiles({ onOpen, onCreate, onJDChange, onEdit }) {
   }
 
   element('btnNewDocument').addEventListener('click', openCreate);
-  element('btnNewDocumentMain').addEventListener('click', openCreate);
   element('btnCancelDocument').addEventListener('click', () => dialog.close());
   element('btnCloseDocument').addEventListener('click', () => dialog.close());
   element('btnEditDocument').addEventListener('click', onEdit);
   element('documentJD').addEventListener('input', (event) => onJDChange(event.target.value));
+  deleteButton.addEventListener('click', () => {
+    if (deleteButton.disabled || deleting) return;
+    deleteTarget = active.filename;
+    element('deleteDocumentFilename').textContent = deleteTarget;
+    element('deleteDocumentError').textContent = '';
+    deleteDialog.showModal();
+    element('btnCancelDeleteDocument').focus();
+  });
+  element('btnCancelDeleteDocument').addEventListener('click', () => deleteDialog.close());
+  deleteDialog.addEventListener('cancel', (event) => {
+    if (deleting) event.preventDefault();
+  });
+  deleteForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (deleting) return;
+    deleting = true;
+    const confirm = element('btnConfirmDeleteDocument');
+    const cancel = element('btnCancelDeleteDocument');
+    confirm.disabled = cancel.disabled = true;
+    confirm.textContent = '正在删除…';
+    deleteDialog.setAttribute('aria-busy', 'true');
+    element('deleteDocumentError').textContent = '';
+    try {
+      const deleted = await onDelete(deleteTarget);
+      if (deleted) {
+        deleteDialog.close();
+        element('btnEditDocument').focus();
+      } else {
+        element('deleteDocumentError').textContent = '删除失败，文件已保留，请重试。';
+      }
+    } finally {
+      deleting = false;
+      confirm.disabled = cancel.disabled = false;
+      confirm.textContent = '删除简历';
+      deleteDialog.removeAttribute('aria-busy');
+    }
+  });
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();

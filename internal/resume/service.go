@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -69,7 +70,19 @@ func (r *Resume) Fill(content Content) (string, error) {
 	if err := r.template.Validate(content); err != nil {
 		return "", r.failure("preview", apperr.PreviewFailed, err)
 	}
-	return r.template.Fill(content.Fields), nil
+	html, err := r.filledHTML(content.Fields)
+	if err != nil {
+		return "", r.failure("preview", apperr.PreviewFailed, err)
+	}
+	return html, nil
+}
+
+func (r *Resume) filledHTML(fields map[string][]string) (string, error) {
+	fields, err := embedLocalPhoto(fields, r.paths.OutputDir)
+	if err != nil {
+		return "", err
+	}
+	return r.template.Fill(fields), nil
 }
 
 // Save serializes content using schema order and writes the user's document.
@@ -94,15 +107,26 @@ func (r *Resume) Save(content Content) (string, error) {
 }
 
 // Export renders the document and delegates PDF creation to the desktop adapter.
-func (r *Resume) Export(content Content) (string, error) {
+func (r *Resume) Export(filename string, content Content) (string, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	if _, err := r.readDocument(filename); err != nil {
+		return "", r.failure("export", apperr.ExportFailed, err)
+	}
 	if err := r.template.Validate(content); err != nil {
 		return "", r.failure("export", apperr.ExportFailed, err)
 	}
 	started := time.Now()
 	r.logger.Info("export_started")
-	result, err := exportPDF(r.paths.OutputDir, r.template.Fill(content.Fields), r.renderPDF)
+	html, err := r.filledHTML(content.Fields)
+	if err != nil {
+		return "", r.failure("export", apperr.ExportFailed, err)
+	}
+	base := "成品简历"
+	if filename != filepath.Base(r.paths.ContentFile) {
+		base += "_" + strings.TrimSuffix(strings.TrimPrefix(filename, "简历_"), ".md")
+	}
+	result, err := exportPDF(r.paths.OutputDir, base, html, r.renderPDF)
 	if err != nil {
 		return "", r.failure("export", apperr.ExportFailed, err)
 	}
