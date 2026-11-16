@@ -209,7 +209,8 @@ strong,.bold{font-weight:700;color:var(--ink-strong);}
 @page{size:A4;margin:0;}
 @media print{
   html,body{background:#FFFFFF !important;}
-  .page{margin:0 !important;box-shadow:none !important;}
+  /* WebKitGTK rounds a full-height A4 box up and emits a trailing blank sheet. */
+  .page{height:296.5mm;margin:0 !important;box-shadow:none !important;}
   .page-inner{overflow:hidden;}
 }
 @media screen and (max-width:820px){
