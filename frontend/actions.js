@@ -43,7 +43,7 @@ export function createDocumentActions({
         try {
           const info = await backend.saveDocument(next.filename, next.content, next.jd);
           await onSaved(info, next.revision === revision);
-          if (next.revision === revision) notices.status('已保存');
+          if (next.revision === revision) notices.status('已保存到本机');
           logger.info('save_completed');
         } catch (cause) {
           if (!pending && next.revision === revision) pending = next;
@@ -75,7 +75,7 @@ export function createDocumentActions({
       await save(true, exported);
       notices.status('正在导出 PDF…', 'busy');
       const result = await backend.export(exported.filename, exported.content);
-      notices.status('已保存');
+      notices.status('已保存到本机');
       notices.toast('PDF 已导出：' + result);
       logger.info('export_completed');
     } catch (cause) {

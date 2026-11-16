@@ -11,6 +11,12 @@
  * @typedef {{filename: string, company: string, role: string, jd: string, modifiedAt: string}} DocumentInfo
  * @typedef {{document: DocumentInfo, content: ResumeContent}} ResumeDocument
  * @typedef {{company: string, role: string, jd: string, source: string}} NewDocument
+ * @typedef {{serverURL: string, username: string, password: string, remotePath: string,
+ *   clearPassword?: boolean}} WebDAVSettingsInput
+ * @typedef {{serverURL: string, username: string, remotePath: string, hasPassword: boolean,
+ *   lastSyncedAt: string}} WebDAVSettings
+ * @typedef {{uploaded: number, downloaded: number, deleted: number, conflicts: string[],
+ *   lastSyncedAt: string}} WebDAVSyncResult
  * @typedef {{filled: number, total: number, groups: Record<string, number>}} ContentProgress
  * @typedef {{platform: string,
  *   workspace: () => Promise<{documents: DocumentInfo[], current: ResumeDocument}>,
@@ -19,6 +25,11 @@
  *   createDocument: (input: NewDocument) => Promise<ResumeDocument>,
  *   deleteDocument: (filename: string) => Promise<{documents: DocumentInfo[], current: ResumeDocument}>,
  *   saveDocument: (filename: string, content: ResumeContent, jd: string) => Promise<DocumentInfo>,
+ *   getWebDAVSettings: () => Promise<WebDAVSettings>,
+ *   saveWebDAVSettings: (settings: WebDAVSettingsInput) => Promise<WebDAVSettings>,
+ *   testWebDAVConnection: (settings: WebDAVSettingsInput) => Promise<string>,
+ *   syncWebDAV: () => Promise<WebDAVSyncResult>,
+ *   resolveWebDAVConflict: (filename: string, choice: 'local' | 'remote') => Promise<void>,
  *   progress: (content: ResumeContent) => Promise<ContentProgress>,
  *   load: () => Promise<ResumeContent>, fill: (content: ResumeContent) => Promise<string>,
  *   save: (content: ResumeContent) => Promise<string>, export: (filename: string, content: ResumeContent) => Promise<string>,

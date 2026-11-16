@@ -19,6 +19,11 @@ export function createBackend(errors) {
     createDocument: 'Resume.CreateDocument',
     deleteDocument: 'Resume.DeleteDocument',
     saveDocument: 'Resume.SaveDocument',
+    getWebDAVSettings: 'Resume.GetWebDAVSettings',
+    saveWebDAVSettings: 'Resume.SaveWebDAVSettings',
+    testWebDAVConnection: 'Resume.TestWebDAVConnection',
+    syncWebDAV: 'Resume.SyncWebDAV',
+    resolveWebDAVConflict: 'Resume.ResolveWebDAVConflict',
   };
 
   async function invoke(method, code, ...args) {
@@ -45,5 +50,13 @@ export function createBackend(errors) {
       invoke('deleteDocument', errors.codes.DOCUMENT_DELETE_FAILED, filename),
     saveDocument: (filename, content, jd) =>
       invoke('saveDocument', errors.codes.CONTENT_SAVE_FAILED, filename, content, jd),
+    getWebDAVSettings: () => invoke('getWebDAVSettings', errors.codes.STORAGE_READ_FAILED),
+    saveWebDAVSettings: (settings) =>
+      invoke('saveWebDAVSettings', errors.codes.STORAGE_WRITE_FAILED, settings),
+    testWebDAVConnection: (settings) =>
+      invoke('testWebDAVConnection', errors.codes.WEBDAV_CONNECT_FAILED, settings),
+    syncWebDAV: () => invoke('syncWebDAV', errors.codes.WEBDAV_SYNC_FAILED),
+    resolveWebDAVConflict: (filename, choice) =>
+      invoke('resolveWebDAVConflict', errors.codes.WEBDAV_CONFLICT_CHANGED, filename, choice),
   };
 }

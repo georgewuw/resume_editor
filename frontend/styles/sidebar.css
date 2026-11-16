@@ -189,6 +189,9 @@
   min-height: 44px;
   margin: 12px -10px 0;
   border-top: 1px solid var(--line-strong);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
 }
 .side-settings {
   position: relative;
@@ -196,13 +199,13 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  flex: none;
+  flex: 0 0 50%;
   height: 43px;
   padding: 0 10px;
   border: 0;
   background: transparent;
   color: var(--ink-2);
-  font-size: 11px;
+  font-size: inherit;
   white-space: nowrap;
   transition:
     background 0.16s,
@@ -211,9 +214,13 @@
 .side-settings::after {
   position: absolute;
   content: '';
-  inset: 11px 0 11px auto;
+  inset: 0 0 0 auto;
   width: 1px;
   background: var(--line-strong);
+}
+.side-settings svg {
+  width: 16px;
+  height: 16px;
 }
 .side-settings:hover {
   background: var(--chrome-hover);
@@ -230,16 +237,15 @@
   flex: 1;
   min-width: 0;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 0 10px;
+  justify-content: center;
+  padding: 0 8px;
 }
 .save-state {
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 7px;
-  font-size: 11px;
+  gap: 6px;
+  font-size: inherit;
   color: var(--ink-2);
   white-space: nowrap;
 }
@@ -249,8 +255,8 @@
 }
 .state-dot {
   flex: none;
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #5b816e;
   transition: background 0.16s;
@@ -261,25 +267,58 @@
 .save-state.error .state-dot {
   background: var(--danger);
 }
-.side-progress {
-  flex: none;
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-2);
-}
 
 /* The collapsed rail keeps each module and the save state accessible. */
 html.sidebar-collapsed .sidebar {
   width: var(--sidebar-rail-w);
   padding: 12px 6px 0;
 }
-html.sidebar-collapsed .workspace-segments {
-  flex-direction: column;
-}
-html.sidebar-collapsed .workspace-segments button {
-  flex: none;
-  padding: 0 2px;
-  font-size: 10px;
+@media (min-width: 921px) {
+  html.sidebar-collapsed .workspace-segments {
+    position: relative;
+    gap: 4px;
+    padding: 3px;
+    border: 0;
+    background: transparent;
+  }
+  html.sidebar-collapsed .workspace-segments::before {
+    position: absolute;
+    content: '';
+    inset: 8px 0;
+    border-radius: 4px;
+    background: #e2e7ed;
+    pointer-events: none;
+  }
+  html.sidebar-collapsed .workspace-segments button {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 24px;
+    padding: 0;
+    border-radius: 3px;
+    background: transparent;
+    box-shadow: none;
+  }
+  html.sidebar-collapsed .workspace-segments button span {
+    display: none;
+  }
+  html.sidebar-collapsed .workspace-segments button::before {
+    content: '';
+    width: 100%;
+    height: 6px;
+    border-radius: 2px;
+    background: #aebbc9;
+    transition: background 0.14s;
+  }
+  html.sidebar-collapsed .workspace-segments button:hover::before {
+    background: #899bad;
+  }
+  html.sidebar-collapsed .workspace-segments button[aria-pressed='true']::before {
+    background: var(--surface);
+  }
+  html.sidebar-collapsed .workspace-segments button:focus-visible {
+    outline-offset: 1px;
+  }
 }
 html.sidebar-collapsed .side-document,
 html.sidebar-collapsed .nav-name,
@@ -287,8 +326,7 @@ html.sidebar-collapsed .nav-count,
 html.sidebar-collapsed .file-item-copy,
 html.sidebar-collapsed .file-list-head,
 html.sidebar-collapsed .new-file-label,
-html.sidebar-collapsed .side-settings-label,
-html.sidebar-collapsed .side-progress {
+html.sidebar-collapsed .side-settings-label {
   display: none;
 }
 html.sidebar-collapsed .nav-item,
@@ -307,6 +345,7 @@ html.sidebar-collapsed .side-status {
   padding-inline: 6px;
 }
 html.sidebar-collapsed .side-settings {
+  flex: none;
   width: 32px;
   padding: 0;
 }
@@ -316,6 +355,20 @@ html.sidebar-collapsed .side-settings::after {
 html.sidebar-collapsed .side-status-summary {
   flex: none;
   padding: 0;
+}
+@media (min-width: 921px) {
+  html.sidebar-collapsed .side-status {
+    flex-direction: column-reverse;
+    gap: 0;
+    padding-block: 8px 4px;
+  }
+  html.sidebar-collapsed .side-status-summary {
+    min-height: 24px;
+  }
+  html.sidebar-collapsed .side-settings {
+    height: 32px;
+    border-radius: 5px;
+  }
 }
 html.sidebar-collapsed #saveText {
   position: absolute;

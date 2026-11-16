@@ -275,7 +275,6 @@ export function createEditor({
       return;
     }
     if (request !== progressRequest) return;
-    const n = progress.filled;
     groups.forEach((group) => {
       const count = progress.groups[group.id] || 0;
       const node = navProgress.get(group.id);
@@ -284,10 +283,6 @@ export function createEditor({
       node.textContent = count + '/' + total;
       node.setAttribute('aria-label', '已填写 ' + count + ' / ' + total + ' 项');
     });
-    const summary = element('completionSummary');
-    summary.textContent = n + ' / ' + progress.total;
-    summary.title = '已填写 ' + n + ' / ' + progress.total + ' 项';
-    summary.setAttribute('aria-label', summary.title);
   }
 
   element('searchInput').addEventListener('input', (event) => {

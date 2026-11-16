@@ -11,6 +11,7 @@ import { createPanes } from './components/panes.js';
 import { createEditor } from './components/editor.js';
 import { createPreview } from './components/preview.js';
 import { createFiles } from './components/files.js';
+import { createWebDAVSettings } from './components/webdav-settings.js';
 import { element } from './dom.js';
 
 // Composition root: components receive their data and collaborators explicitly.
@@ -115,7 +116,7 @@ async function startApp(data) {
       editor.refresh();
       element('form').scrollTop = 0;
       await preview.refresh(content);
-      notices.status('已同步');
+      notices.status('已保存到本机');
     }
 
     const files = createFiles({
@@ -151,6 +152,17 @@ async function startApp(data) {
         actions.scheduleSave();
       },
       onEdit: () => titlebar.setMode('content'),
+    });
+    createWebDAVSettings({
+      backend,
+      errors,
+      logger,
+      beforeSync: actions.flush,
+      async afterSync() {
+        const refreshed = await backend.workspace();
+        documents = refreshed.documents;
+        await applyDocument(refreshed.current);
+      },
     });
     createPanes({
       onResize: preview.fit,

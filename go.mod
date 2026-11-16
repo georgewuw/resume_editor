@@ -4,13 +4,18 @@ go 1.27.4
 
 tool github.com/egoist/mygo/cmd/mygo
 
-require github.com/egoist/mygo v0.9.1
+require (
+	github.com/egoist/mygo v0.9.1
+	github.com/zalando/go-keyring v0.2.8
+)
 
 require (
 	github.com/ProtonMail/go-crypto v1.4.1 // indirect
 	github.com/cloudflare/circl v1.6.2 // indirect
+	github.com/danieljoos/wincred v1.2.3 // indirect
 	github.com/ebitengine/purego v0.11.1 // indirect
 	github.com/go-text/typesetting v0.3.5 // indirect
+	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/klauspost/compress v1.18.6 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	go.digitalxero.dev/rpm v0.3.4 // indirect

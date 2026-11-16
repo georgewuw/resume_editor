@@ -28,6 +28,10 @@ const (
 	ExportMissing   Code = "EXPORT_OUTPUT_MISSING"
 	StorageRead     Code = "STORAGE_READ_FAILED"
 	StorageWrite    Code = "STORAGE_WRITE_FAILED"
+	WebDAVConfig    Code = "WEBDAV_CONFIG_INVALID"
+	WebDAVConnect   Code = "WEBDAV_CONNECT_FAILED"
+	WebDAVSync      Code = "WEBDAV_SYNC_FAILED"
+	WebDAVConflict  Code = "WEBDAV_CONFLICT_CHANGED"
 	BridgeFailed    Code = "BRIDGE_CALL_FAILED"
 	LogInit         Code = "LOG_INIT_FAILED"
 	LogWrite        Code = "LOG_WRITE_FAILED"
@@ -52,6 +56,10 @@ var messages = map[Code]string{
 	ExportMissing:   "未生成有效的 PDF 文档",
 	StorageRead:     "读取界面偏好失败",
 	StorageWrite:    "保存界面偏好失败",
+	WebDAVConfig:    "WebDAV 配置无效，请检查服务器地址、账号和应用密码",
+	WebDAVConnect:   "无法连接 WebDAV 服务，请检查地址、账号和应用密码",
+	WebDAVSync:      "同步失败，文件未完成处理，请检查网络后重试",
+	WebDAVConflict:  "冲突状态已变化，请重新同步后再选择版本",
 	BridgeFailed:    "调用桌面服务失败",
 	LogInit:         "初始化日志失败",
 	LogWrite:        "写入日志失败",

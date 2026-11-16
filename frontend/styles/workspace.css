@@ -206,7 +206,10 @@ body.is-resizing #previewFrame {
 }
 .field input:focus,
 .field textarea:focus,
-.jd-editor textarea:focus {
+.jd-editor textarea:focus,
+.dialog-field input:focus,
+.dialog-field textarea:focus,
+.webdav-row input:focus {
   border-color: var(--accent);
   outline: 0;
   box-shadow: 0 0 0 2px var(--accent-soft);
@@ -627,34 +630,38 @@ body.is-resizing #previewFrame {
   color: var(--ink-3);
 }
 .document-dialog {
-  width: min(530px, calc(100vw - 32px));
-  max-height: calc(100vh - 40px);
+  width: min(36rem, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
   margin: auto;
-  padding: 25px 27px 23px;
-  border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  box-shadow: 0 24px 90px rgba(23, 40, 58, 0.22);
+  padding: 28px 30px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 20px 70px rgba(23, 40, 58, 0.18);
   color: var(--ink);
   background: var(--surface);
   overflow: auto;
 }
 .document-dialog::backdrop {
-  background: rgba(29, 43, 58, 0.26);
+  background: rgba(29, 43, 58, 0.3);
+  backdrop-filter: blur(3px);
 }
 .dialog-heading {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 15px;
-  margin-bottom: 22px;
+  margin-bottom: 25px;
 }
 .dialog-heading h2 {
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.4;
   margin: 0;
   font-weight: 650;
+  letter-spacing: -0.5px;
 }
 .dialog-close {
+  display: grid;
+  place-items: center;
   flex: none;
   align-self: flex-start;
   width: 28px;
@@ -664,11 +671,18 @@ body.is-resizing #previewFrame {
   border-radius: 5px;
   background: transparent;
   color: var(--ink-2);
-  font-size: 23px;
-  line-height: 1;
   transition:
     background 0.14s,
     transform 0.14s;
+}
+.dialog-close svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
 }
 .dialog-close:hover {
   background: var(--accent-soft);
@@ -689,8 +703,8 @@ body.is-resizing #previewFrame {
 }
 .dialog-field {
   display: block;
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   margin-bottom: 17px;
 }
 .dialog-field > span {
@@ -703,8 +717,9 @@ body.is-resizing #previewFrame {
 .dialog-field textarea {
   display: block;
   width: 100%;
+  min-height: 38px;
   margin-top: 7px;
-  padding: 9px 11px;
+  padding: 8px 11px;
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   color: var(--ink);
@@ -712,6 +727,14 @@ body.is-resizing #previewFrame {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.6;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.dialog-field input:hover:not(:disabled):not(:focus),
+.dialog-field textarea:hover:not(:disabled):not(:focus) {
+  border-color: #a7b5c2;
 }
 .dialog-field textarea {
   min-height: 115px;
@@ -771,13 +794,15 @@ body.is-resizing #previewFrame {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 22px;
-  padding-top: 16px;
+  margin-top: 20px;
+  padding-top: 18px;
   border-top: 1px solid var(--line);
 }
 .dialog-actions .btn {
-  min-height: 34px;
+  min-height: 36px;
   padding: 0 16px;
+  font-size: 12px;
+  transition-duration: 0.2s;
 }
 .dialog-actions button[type='submit'] {
   background: var(--accent);
@@ -831,6 +856,366 @@ button:disabled {
   opacity: 0.5;
   cursor: default;
 }
+
+.webdav-dialog {
+  overflow: hidden;
+}
+.webdav-dialog form {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 84px);
+}
+.webdav-body {
+  min-height: 0;
+  margin: 0 -8px;
+  padding: 0 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.webdav-heading {
+  flex-shrink: 0;
+}
+.webdav-heading p {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  font-size: 12px;
+}
+.webdav-fields legend {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+.webdav-row {
+  display: grid;
+  grid-template-columns: 5.25rem minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.webdav-row > label {
+  padding-top: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.webdav-control {
+  min-width: 0;
+}
+.webdav-row input,
+.webdav-provider-trigger {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  margin: 0;
+  padding: 8px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface-alt);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.webdav-provider-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.webdav-provider-trigger:focus {
+  outline: 0;
+}
+.webdav-provider-trigger:focus-visible,
+.webdav-provider-trigger[aria-expanded='true'] {
+  background: var(--accent-soft);
+}
+.webdav-row input:hover:not(:disabled):not(:focus),
+.webdav-provider-trigger:hover:not(:disabled):not(:focus):not([aria-expanded='true']) {
+  border-color: #a7b5c2;
+}
+.webdav-provider {
+  position: relative;
+  min-width: 0;
+}
+.webdav-provider svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.webdav-provider-trigger svg {
+  color: var(--ink-2);
+  transition: transform 0.2s;
+}
+.webdav-provider-trigger[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+.webdav-provider-options {
+  position: absolute;
+  z-index: 1;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(23, 40, 58, 0.14);
+  animation: webdav-menu-enter 0.16s ease-out;
+}
+.webdav-provider-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 11px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition:
+    background 0.16s,
+    color 0.16s;
+}
+.webdav-provider-option strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+}
+.webdav-provider-option small {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink-2);
+  font-size: 10.5px;
+}
+.webdav-provider-option svg {
+  visibility: hidden;
+  color: var(--accent);
+}
+.webdav-provider-option[aria-selected='true'] svg {
+  visibility: visible;
+}
+.webdav-provider-option:hover,
+.webdav-provider-option[data-active='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+@keyframes webdav-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.webdav-row input::placeholder {
+  color: #7a8795;
+}
+.webdav-row input:disabled,
+.webdav-provider-trigger:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+.webdav-hint {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+.webdav-password-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 8px;
+}
+.webdav-forget {
+  margin: 4px -3px -2px 0;
+  padding: 2px 3px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 10.5px;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    transform 0.2s;
+}
+.webdav-forget:hover:not(:disabled) {
+  color: var(--danger);
+  background: #fbf2f0;
+}
+.webdav-forget:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.webdav-directory {
+  margin-bottom: 20px;
+}
+.webdav-sync-state {
+  padding: 13px 15px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+.webdav-sync-state h3 {
+  margin: 0 0 4px;
+  color: var(--ink-2);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+.webdav-note {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+.webdav-status {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 20px;
+  margin: 0;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.webdav-status::before {
+  content: '';
+  flex: 0 0 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.65;
+  transform: translateY(-2px);
+}
+.webdav-status[data-kind='busy'] {
+  color: var(--accent);
+}
+.webdav-status[data-kind='success'] {
+  color: #315f48;
+}
+.webdav-status[data-kind='warning'] {
+  color: #805c21;
+}
+.webdav-status[data-kind='error'] {
+  color: var(--danger);
+}
+.webdav-conflicts {
+  display: grid;
+  gap: 7px;
+  max-height: 180px;
+  margin: 10px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+  overflow: auto;
+}
+.webdav-conflicts li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 6px;
+}
+.webdav-conflict-name {
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: 10.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.webdav-conflicts .btn {
+  height: 28px;
+  padding: 0 8px;
+  font-size: 10.5px;
+}
+.webdav-actions {
+  flex-shrink: 0;
+}
+.webdav-actions #btnTestWebDAV {
+  margin-right: auto;
+  padding-right: 8px;
+  padding-left: 8px;
+  border-color: transparent;
+  background: transparent;
+}
+.webdav-actions #btnTestWebDAV:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+.webdav-actions .primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+.webdav-actions .primary:hover:not(:disabled) {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+  color: white;
+}
+@media (max-width: 560px) {
+  .webdav-dialog form {
+    max-height: calc(100dvh - 74px);
+  }
+  .webdav-heading {
+    margin-bottom: 20px;
+  }
+  .webdav-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .webdav-row > label {
+    padding-top: 0;
+  }
+  .webdav-row input,
+  .webdav-provider-trigger {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .webdav-forget {
+    min-height: 36px;
+  }
+  .webdav-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .webdav-actions #btnTestWebDAV {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .webdav-conflicts li {
+    grid-template-columns: 1fr 1fr;
+  }
+  .webdav-conflict-name {
+    grid-column: 1 / -1;
+  }
+  .webdav-conflicts .btn {
+    min-height: 44px;
+  }
+}
 [hidden] {
   display: none !important;
 }
@@ -875,9 +1260,24 @@ button:disabled {
     font-size: 12px;
   }
   .side-document,
-  .side-status,
   html.sidebar-collapsed .side-status,
   .file-list-head {
+    display: none;
+  }
+  .side-status {
+    min-height: 36px;
+    margin: 4px -16px 0;
+    border-top: 1px solid var(--line);
+  }
+  html.sidebar-collapsed .side-status {
+    display: flex;
+  }
+  .side-settings {
+    flex: none;
+    height: 35px;
+  }
+  .side-settings::after,
+  .side-status-summary {
     display: none;
   }
   .nav-list,
@@ -966,7 +1366,7 @@ button:disabled {
     padding: 0 7px;
   }
   .document-dialog {
-    padding: 20px;
+    padding: 22px 20px 18px;
   }
   .dialog-field-grid,
   .document-sources {

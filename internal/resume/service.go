@@ -15,12 +15,13 @@ import (
 
 // Resume is the desktop service. Only intentional frontend APIs are exported.
 type Resume struct {
-	mu        sync.Mutex
-	resources Resources
-	paths     StoragePaths
-	template  *Template
-	renderPDF PDFRenderer
-	logger    *slog.Logger
+	mu                sync.Mutex
+	resources         Resources
+	paths             StoragePaths
+	template          *Template
+	renderPDF         PDFRenderer
+	logger            *slog.Logger
+	webDAVCredentials webDAVCredentialStore
 }
 
 // New compiles shared definitions and assembles the desktop service.
@@ -34,7 +35,7 @@ func New(resources Resources, paths StoragePaths, renderPDF PDFRenderer, logger 
 	}
 	return &Resume{
 		resources: resources, paths: paths, template: template, renderPDF: renderPDF,
-		logger: logger.With("component", "resume"),
+		logger: logger.With("component", "resume"), webDAVCredentials: systemWebDAVCredentialStore{},
 	}, nil
 }
 
